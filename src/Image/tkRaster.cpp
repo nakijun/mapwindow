@@ -1115,8 +1115,6 @@ namespace {
 template <typename DataType>
 bool tkRaster::ReadGridAsImage(colour** ImageData, int xOff, int yOff, int width, int height, int xBuff, int yBuff, bool setRGBToGrey) 
 {
-	for (int i = 0; i < 100; ++i)
-		ReadGridAsImage2<DataType>(ImageData, xOff, yOff, width, height, xBuff, yBuff, setRGBToGrey);
 	return ReadGridAsImage2<DataType>(ImageData, xOff, yOff, width, height, xBuff, yBuff, setRGBToGrey);
 }
 
