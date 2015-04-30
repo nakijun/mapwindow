@@ -816,6 +816,9 @@
     <ClInclude Include="ComHelpers\CallbackHelper.h">
       <Filter>ComHelpers</Filter>
     </ClInclude>
+    <ClInclude Include="Utilities\AngleHelper.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="COM classes\Chart.cpp">
@@ -1736,6 +1739,9 @@
     </ClCompile>
     <ClCompile Include="Tiles\Providers\BingMapProvider.cpp">
       <Filter>Tiles\Providers</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\AngleHelper.cpp">
+      <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

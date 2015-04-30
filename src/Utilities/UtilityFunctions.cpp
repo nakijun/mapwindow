@@ -672,30 +672,7 @@ namespace Utility
 #pragma endregion
 
 #pragma region Numbers
-	// *********************************************************
-	//		FormatAngle()
-	// *********************************************************	
-	CStringW Utility::FormatAngle(double angle, bool withDecimals)
-    {
-        while (angle < -180.0)
-            angle += 360.0;
 
-        while (angle > 180.0)
-            angle -= 360.0;
-
-        int degrees = (int)floor(angle);
-        double delta = angle - degrees;
-
-        int minutes = (int)floor(60.0 * delta);
-        
-        delta = delta - minutes/60.0;
-        double seconds = delta*3600.0;
-
-        //CString dec = withDecimals ? ((int)((seconds % 1)*100.0 + 0.5)).ToString("D2") : "";
-        CStringW s;
-		s.Format(L"%d° %2d' %2d\"", degrees, minutes, (int)floor(seconds)); //, dec);
-		return s;
-    }
 
 	// *********************************************************
 	//		FormatNumber()

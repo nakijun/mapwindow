@@ -16,7 +16,7 @@ public:
 	CShapeEditor()
 	{
 		_activeShape = new EditorBase();
-		_activeShape->AreaDisplayMode = admNone;
+		_activeShape->AreaDisplayMode = admMetric;
 		_lastErrorCode = tkNO_ERROR;
 		_globalCallback = NULL;
 		_key = SysAllocString(L"");
@@ -112,8 +112,8 @@ public:
 	STDMETHOD(put_IndicesVisible)(VARIANT_BOOL newVal);
 	STDMETHOD(get_AreaDisplayMode)(tkAreaDisplayMode* retVal);
 	STDMETHOD(put_AreaDisplayMode)(tkAreaDisplayMode newVal);
-	STDMETHOD(get_AngleDisplayMode)(tkAngleDisplay* retVal);
-	STDMETHOD(put_AngleDisplayMode)(tkAngleDisplay newVal);
+	STDMETHOD(get_BearingType)(tkBearingType* retVal);
+	STDMETHOD(put_BearingType)(tkBearingType newVal);
 	STDMETHOD(get_LengthDisplayMode)(tkLengthDisplayMode* pVal);
 	STDMETHOD(put_LengthDisplayMode)(tkLengthDisplayMode newVal);
 	STDMETHOD(ClearSubjectShapes)();

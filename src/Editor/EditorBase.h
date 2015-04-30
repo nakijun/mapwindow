@@ -11,7 +11,7 @@ public:
 	EditorBase(void) {
 		_shpType = SHP_NULLSHAPE;
 		_creationMode = false;
-		DisplayAngles = true;
+		ShowBearing = true;
 	};
 	virtual ~EditorBase(void) {};
 

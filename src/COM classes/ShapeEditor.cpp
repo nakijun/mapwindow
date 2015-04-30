@@ -448,17 +448,17 @@ STDMETHODIMP CShapeEditor::put_AreaDisplayMode(tkAreaDisplayMode newVal)
 // *******************************************************
 //		AngleDisplayMode()
 // *******************************************************
-STDMETHODIMP CShapeEditor::get_AngleDisplayMode(tkAngleDisplay* retVal)
+STDMETHODIMP CShapeEditor::get_BearingType(tkBearingType* retVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	*retVal = _activeShape->AngleDisplayMode;
+	*retVal = _activeShape->BearingType;
 	return S_OK;
 }
 
-STDMETHODIMP CShapeEditor::put_AngleDisplayMode(tkAngleDisplay newVal)
+STDMETHODIMP CShapeEditor::put_BearingType(tkBearingType newVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	_activeShape->AngleDisplayMode = newVal;
+	_activeShape->BearingType = newVal;
 	return S_OK;
 }
 
@@ -804,13 +804,13 @@ void CShapeEditor::Render(Gdiplus::Graphics* g, bool dynamicBuffer, DraggingOper
 STDMETHODIMP CShapeEditor::get_IndicesVisible(VARIANT_BOOL* pVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	*pVal = _activeShape->_pointLabelsVisible ? VARIANT_TRUE: VARIANT_FALSE;
+	*pVal = _activeShape->PointLabelsVisible ? VARIANT_TRUE: VARIANT_FALSE;
 	return S_OK;
 }
 STDMETHODIMP CShapeEditor::put_IndicesVisible(VARIANT_BOOL newVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	_activeShape->_pointLabelsVisible = newVal ? true: false;
+	_activeShape->PointLabelsVisible = newVal ? true: false;
 	return S_OK;
 }
 
@@ -820,13 +820,13 @@ STDMETHODIMP CShapeEditor::put_IndicesVisible(VARIANT_BOOL newVal)
 STDMETHODIMP CShapeEditor::get_LengthDisplayMode(tkLengthDisplayMode* pVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	*pVal = _activeShape->_lengthDisplayMode;
+	*pVal = _activeShape->LengthUnits;
 	return S_OK;
 }
 STDMETHODIMP CShapeEditor::put_LengthDisplayMode(tkLengthDisplayMode newVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	_activeShape->_lengthDisplayMode = newVal;
+	_activeShape->LengthUnits = newVal;
 	return S_OK;
 }
 
@@ -904,13 +904,13 @@ STDMETHODIMP CShapeEditor::StartUnboundShape(ShpfileType shpType, VARIANT_BOOL* 
 STDMETHODIMP CShapeEditor::get_VerticesVisible(VARIANT_BOOL* pVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	*pVal = _activeShape->_verticesVisible ? VARIANT_TRUE : VARIANT_FALSE;
+	*pVal = _activeShape->PointsVisible ? VARIANT_TRUE : VARIANT_FALSE;
 	return S_OK;
 }
 STDMETHODIMP CShapeEditor::put_VerticesVisible(VARIANT_BOOL newVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	_activeShape->_verticesVisible = newVal ? true: false;
+	_activeShape->PointsVisible = newVal ? true: false;
 	return S_OK;
 }
 

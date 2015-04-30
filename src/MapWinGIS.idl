@@ -58,6 +58,20 @@ interface IOgrLayer;
 interface IUndoList;
 interface IIdentifier;
 
+/************************** tkAngleDisplay Enumeration **********************/
+typedef
+[
+	uuid(2E938DB8-3C6C-47C8-BE04-4A456E45A757),
+	helpstring("tkBearingType"),
+]
+enum tkBearingType {
+	btAbsolute = 0,
+	btReducedNDE = 1,
+	btReducedNED = 2,
+	btClockwise = 3,
+    btCounterClockwise = 4,
+}tkBearingType;
+
 /************************** tkProxyAuthentication Enumeration **********************/
 typedef
 [
@@ -194,9 +208,8 @@ typedef
 	helpstring("tkLengthDisplayMode"),
 ]
 enum tkLengthDisplayMode {
-	ldmNone = 0,
 	ldmMetric = 1,
-	//ldmAmerican = 2,
+    ldmMilesAndFeet = 2,
 }tkLengthDisplayMode;
 
 /************************** tkShapeEditorState Enumeration **********************/
@@ -404,25 +417,11 @@ typedef
 ]
 enum tkAngleFormat
 {
-	 afDegrees05 = 0,
-     afDegrees01 = 1,
-     afDegreesAndMinutes = 2,
+	 afDegrees = 0,
+     afMinutes = 1,
+	 afSeconds = 2,
+	 afRadians = 3,
 } tkAngleFormat;
-
-/************************** tkAngleDisplay Enumeration **********************/
-typedef		
-[
-	uuid(BCAF8D23-3F37-44CF-B0A5-00FD12497CA7),
-	helpstring("tkAngleDisplay"),
-]
-enum tkAngleDisplay
-{
-	 Azimuth = 0,
-     RussianRhumb = 1,
-     ClockwiseBearing = 2,
-     CounterClockwiseBearing = 3,
-     AngleNone = 4,
-} tkAngleDisplay;
 
 /************************** tkAreaDisplayMode Enumeration **********************/
 typedef		
@@ -434,7 +433,8 @@ enum tkAreaDisplayMode
 {
 	 admMetric = 0,
      admHectars = 1,
-	 admNone = 2,
+	 admAcres = 2,
+	 admAcresAndFeet = 2,
 } tkAreaDisplayMode;
 
 /************************** tkCustomState Enumeration **********************/
@@ -3248,8 +3248,8 @@ enum tkScalebarUnits
 		[propget, id(16)] HRESULT RawData([out, retval] IShape** pVal);
 		[propget, id(17)] HRESULT IsDigitizing([out, retval]VARIANT_BOOL* retVal);
 		[propget, id(20)] HRESULT Area([out, retval]double* retVal);
-		[propget, id(22)] HRESULT AngleDisplayMode([out, retval]tkAngleDisplay* retVal);
-		[propput, id(22)] HRESULT AngleDisplayMode([in]tkAngleDisplay newVal);
+		[propget, id(22)] HRESULT BearingType([out, retval]tkBearingType* retVal);
+		[propput, id(22)] HRESULT BearingType([in]tkBearingType newVal);
 		[id(23)] HRESULT put_PointXY([in]long pointIndex, [in]double X, [in]double Y, [out, retval]VARIANT_BOOL* retVal);
 		[propget, id(24)] HRESULT LayerHandle([out, retval]LONG* retVal);
 		[propget, id(25)] HRESULT ShapeIndex([out, retval]LONG* retVal);
@@ -5539,8 +5539,8 @@ interface IMeasuring : IDispatch{
 	[id(10), helpstring("")] HRESULT Clear();
 	[propget, id(11), helpstring("")] HRESULT Persistent([out, retval] VARIANT_BOOL* retVal);
 	[propput, id(11), helpstring("")] HRESULT Persistent([in] VARIANT_BOOL newVal);
-	[propget, id(12), helpstring("")] HRESULT DisplayAngles([out, retval] VARIANT_BOOL* retVal);
-	[propput, id(12), helpstring("")] HRESULT DisplayAngles([in] VARIANT_BOOL newVal);
+	[propget, id(12), helpstring("")] HRESULT ShowBearing([out, retval] VARIANT_BOOL* retVal);
+	[propput, id(12), helpstring("")] HRESULT ShowBearing([in] VARIANT_BOOL newVal);
 	[propget, id(13), helpstring("")] HRESULT IsUsingEllipsoid([out, retval] VARIANT_BOOL* retVal);
 	[propget, id(14), helpstring("")] HRESULT ErrorMsg([in] long ErrorCode, [out, retval] BSTR *pVal);
 	[propget, id(15), helpstring("")] HRESULT LastErrorCode([out, retval] long *pVal);
@@ -5549,6 +5549,44 @@ interface IMeasuring : IDispatch{
 	[propget, id(17), helpstring("")] HRESULT Key( [out, retval]BSTR* retVal);
 	[propput, id(17), helpstring("")] HRESULT Key( [in]BSTR newVal);
 	[propget, id(18)] HRESULT IsEmpty([out, retval] VARIANT_BOOL* pVal);
+	[propget, id(19)] HRESULT BearingType([out, retval] tkBearingType* pVal);
+	[propput, id(19)] HRESULT BearingType([in] tkBearingType newVal);
+	[propget, id(20)] HRESULT ShowLength([out, retval] VARIANT_BOOL* pVal);
+	[propput, id(20)] HRESULT ShowLength([in] VARIANT_BOOL newVal);
+	[propget, id(21)] HRESULT LengthUnits([out, retval] tkLengthDisplayMode* pVal);
+	[propput, id(21)] HRESULT LengthUnits([in] tkLengthDisplayMode newVal);
+	[propget, id(22)] HRESULT AreaUnits([out, retval] tkAreaDisplayMode* pVal);
+	[propput, id(22)] HRESULT AreaUnits([in] tkAreaDisplayMode newVal);
+	[propget, id(23)] HRESULT AngleFormat([out, retval] tkAngleFormat* pVal);
+	[propput, id(23)] HRESULT AngleFormat([in] tkAngleFormat newVal);
+	[propget, id(24)] HRESULT AnglePrecision([out, retval] LONG* pVal);
+	[propput, id(24)] HRESULT AnglePrecision([in] LONG newVal);
+	[propget, id(25)] HRESULT AreaPrecision([out, retval] LONG* pVal);
+	[propput, id(25)] HRESULT AreaPrecision([in] LONG newVal);
+	[propget, id(26)] HRESULT LengthPrecision([out, retval] LONG* pVal);
+	[propput, id(26)] HRESULT LengthPrecision([in] LONG newVal);
+	[propget, id(27)] HRESULT PointsVisible([out, retval] VARIANT_BOOL* pVal);
+	[propput, id(27)] HRESULT PointsVisible([in] VARIANT_BOOL newVal);
+	[propget, id(28)] HRESULT LineColor([out, retval] OLE_COLOR* pVal);
+	[propput, id(28)] HRESULT LineColor([in] OLE_COLOR newVal);
+	[propget, id(29)] HRESULT FillColor([out, retval] OLE_COLOR* pVal);
+	[propput, id(29)] HRESULT FillColor([in] OLE_COLOR newVal);
+	[propget, id(30)] HRESULT FillTransparency([out, retval] BYTE* pVal);
+	[propput, id(30)] HRESULT FillTransparency([in] BYTE newVal);
+	[propget, id(31)] HRESULT LineWidth([out, retval] FLOAT* pVal);
+	[propput, id(31)] HRESULT LineWidth([in] FLOAT newVal);
+	[propget, id(32)] HRESULT LineStyle([out, retval] tkDashStyle* pVal);
+	[propput, id(32)] HRESULT LineStyle([in] tkDashStyle newVal);
+	[propget, id(33)] HRESULT PointColor([out, retval] OLE_COLOR* pVal);
+	[propput, id(33)] HRESULT PointColor([in] OLE_COLOR newVal);
+	[propget, id(34)] HRESULT PointFillVisible([out, retval] VARIANT_BOOL* pVal);
+	[propput, id(34)] HRESULT PointFillVisible([in] VARIANT_BOOL newVal);
+	[propget, id(35)] HRESULT PointType([out, retval] tkVertexType* pVal);
+	[propput, id(35)] HRESULT PointType([in] tkVertexType newVal);
+	[propget, id(36)] HRESULT PointLabelsVisible([out, retval] VARIANT_BOOL* pVal);
+	[propput, id(36)] HRESULT PointLabelsVisible([in] VARIANT_BOOL newVal);
+	[propget, id(37)] HRESULT ShowTotalLength([out, retval] VARIANT_BOOL* pVal);
+	[propput, id(37)] HRESULT ShowTotalLength([in] VARIANT_BOOL newVal);
 };
 
 [

@@ -87,13 +87,49 @@ public:
 	STDMETHOD(get_SegmentLength)(int segmentIndex, double* retVal);
 	STDMETHOD(get_Persistent)(VARIANT_BOOL* retVal);
 	STDMETHOD(put_Persistent)(VARIANT_BOOL newVal);
-	STDMETHOD(get_DisplayAngles)(VARIANT_BOOL* retVal);
-	STDMETHOD(put_DisplayAngles)(VARIANT_BOOL newVal);
+	STDMETHOD(get_ShowBearing)(VARIANT_BOOL* retVal);
+	STDMETHOD(put_ShowBearing)(VARIANT_BOOL newVal);
 	STDMETHOD(get_IsUsingEllipsoid)(VARIANT_BOOL* retVal);
-	STDMETHOD(get_AreaDisplayMode)(tkAreaDisplayMode* retVal);
-	STDMETHOD(put_AreaDisplayMode)(tkAreaDisplayMode newVal);
+	STDMETHOD(get_AreaUnits)(tkAreaDisplayMode* retVal);
+	STDMETHOD(put_AreaUnits)(tkAreaDisplayMode newVal);
 	STDMETHOD(get_IsEmpty)(VARIANT_BOOL* pVal);
-	
+	STDMETHOD(get_BearingType)(tkBearingType* pVal);
+	STDMETHOD(put_BearingType)(tkBearingType newVal);
+	STDMETHOD(get_ShowLength)(VARIANT_BOOL* pVal);
+	STDMETHOD(put_ShowLength)(VARIANT_BOOL newVal);
+	STDMETHOD(get_LengthUnits)(tkLengthDisplayMode* pVal);
+	STDMETHOD(put_LengthUnits)(tkLengthDisplayMode newVal);
+	STDMETHOD(get_AngleFormat)(tkAngleFormat* pVal);
+	STDMETHOD(put_AngleFormat)(tkAngleFormat newVal);
+	STDMETHOD(get_AnglePrecision)(LONG* pVal);
+	STDMETHOD(put_AnglePrecision)(LONG newVal);
+	STDMETHOD(get_AreaPrecision)(LONG* pVal);
+	STDMETHOD(put_AreaPrecision)(LONG newVal);
+	STDMETHOD(get_LengthPrecision)(LONG* pVal);
+	STDMETHOD(put_LengthPrecision)(LONG newVal);
+	STDMETHOD(get_PointsVisible)(VARIANT_BOOL* pVal);
+	STDMETHOD(put_PointsVisible)(VARIANT_BOOL newVal);
+	STDMETHOD(get_LineColor)(OLE_COLOR* pVal);
+	STDMETHOD(put_LineColor)(OLE_COLOR newVal);
+	STDMETHOD(get_FillColor)(OLE_COLOR* pVal);
+	STDMETHOD(put_FillColor)(OLE_COLOR newVal);
+	STDMETHOD(get_FillTransparency)(BYTE* pVal);
+	STDMETHOD(put_FillTransparency)(BYTE newVal);
+	STDMETHOD(get_LineWidth)(FLOAT* pVal);
+	STDMETHOD(put_LineWidth)(FLOAT newVal);
+	STDMETHOD(get_LineStyle)(tkDashStyle* pVal);
+	STDMETHOD(put_LineStyle)(tkDashStyle newVal);
+	STDMETHOD(get_PointColor)(OLE_COLOR* pVal);
+	STDMETHOD(put_PointColor)(OLE_COLOR newVal);
+	STDMETHOD(get_PointFillVisible)(VARIANT_BOOL* pVal);
+	STDMETHOD(put_PointFillVisible)(VARIANT_BOOL newVal);
+	STDMETHOD(get_PointType)(tkVertexType* pVal);
+	STDMETHOD(put_PointType)(tkVertexType newVal);
+	STDMETHOD(get_PointLabelsVisible)(VARIANT_BOOL* pVal);
+	STDMETHOD(put_PointLabelsVisible)(VARIANT_BOOL newVal);
+	STDMETHOD(get_ShowTotalLength)(VARIANT_BOOL* pVal);
+	STDMETHOD(put_ShowTotalLength)(VARIANT_BOOL newVal);
+
 private:
 	long _lastErrorCode;
 	ICallback * _globalCallback;
@@ -102,7 +138,6 @@ private:
 
 public:
 	MeasuringBase* GetBase() { return _measuring; }
-	
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(Measuring), CMeasuring)

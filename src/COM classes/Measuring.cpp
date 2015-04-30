@@ -213,19 +213,19 @@ STDMETHODIMP CMeasuring::get_SegmentLength(int segmentIndex, double* retVal)
 }
 
 // *******************************************************
-//		DisplayAngles()
+//		ShowBearing()
 // *******************************************************
-STDMETHODIMP CMeasuring::get_DisplayAngles(VARIANT_BOOL* retVal)
+STDMETHODIMP CMeasuring::get_ShowBearing(VARIANT_BOOL* retVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	*retVal = _measuring->DisplayAngles ? VARIANT_TRUE: VARIANT_FALSE;
+	*retVal = _measuring->ShowBearing ? VARIANT_TRUE: VARIANT_FALSE;
 	return S_OK;
 }
 
-STDMETHODIMP CMeasuring::put_DisplayAngles(VARIANT_BOOL newVal)
+STDMETHODIMP CMeasuring::put_ShowBearing(VARIANT_BOOL newVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	_measuring->DisplayAngles = newVal ? true: false;
+	_measuring->ShowBearing = newVal ? true: false;
 	return S_OK;
 }
 
@@ -242,14 +242,14 @@ STDMETHODIMP CMeasuring::get_IsUsingEllipsoid(VARIANT_BOOL* retVal)
 // *******************************************************
 //		AreaDisplayMode()
 // *******************************************************
-STDMETHODIMP CMeasuring::get_AreaDisplayMode(tkAreaDisplayMode* retVal)
+STDMETHODIMP CMeasuring::get_AreaUnits(tkAreaDisplayMode* retVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 	*retVal = _measuring->AreaDisplayMode;
 	return S_OK;
 }
 
-STDMETHODIMP CMeasuring::put_AreaDisplayMode(tkAreaDisplayMode newVal)
+STDMETHODIMP CMeasuring::put_AreaUnits(tkAreaDisplayMode newVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 	_measuring->AreaDisplayMode;
@@ -263,5 +263,311 @@ STDMETHODIMP CMeasuring::get_IsEmpty(VARIANT_BOOL* pVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 	*pVal = _measuring->GetPointCount() == 0 ? VARIANT_TRUE : VARIANT_FALSE;
+	return S_OK;
+}
+
+// *******************************************************
+//		BearingType()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_BearingType(tkBearingType* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->BearingType;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_BearingType(tkBearingType newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->BearingType = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		ShowLength()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_ShowLength(VARIANT_BOOL* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->ShowLength ? VARIANT_TRUE: VARIANT_FALSE;
+ 	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_ShowLength(VARIANT_BOOL newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->ShowLength = newVal ? true : false;
+	return S_OK;
+}
+
+// *******************************************************
+//		LengthDisplayMode()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_LengthUnits(tkLengthDisplayMode* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->LengthUnits;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_LengthUnits(tkLengthDisplayMode newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->LengthUnits = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		AngleFormat()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_AngleFormat(tkAngleFormat* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->AngleFormat;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_AngleFormat(tkAngleFormat newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->AngleFormat = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		AnglePrecision()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_AnglePrecision(LONG* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->AnglePrecision;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_AnglePrecision(LONG newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->AnglePrecision = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		AreaPrecision()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_AreaPrecision(LONG* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->AreaPrecision;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_AreaPrecision(LONG newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->AreaPrecision = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		LengthPrecision()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_LengthPrecision(LONG* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->LengthPrecision;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_LengthPrecision(LONG newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->LengthPrecision = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		PointsVisible()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_PointsVisible(VARIANT_BOOL* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->PointsVisible ? VARIANT_TRUE : VARIANT_FALSE;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_PointsVisible(VARIANT_BOOL newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->PointsVisible = newVal ? true : false;
+	return S_OK;
+}
+
+// *******************************************************
+//		LineColor()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_LineColor(OLE_COLOR* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->LineColor;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_LineColor(OLE_COLOR newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->LineColor = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		FillColor()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_FillColor(OLE_COLOR* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->FillColor;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_FillColor(OLE_COLOR newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->FillColor = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		FillTransparency()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_FillTransparency(BYTE* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->FillTransparency;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_FillTransparency(BYTE newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->FillTransparency = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		LineWidth()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_LineWidth(FLOAT* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->LineWidth;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_LineWidth(FLOAT newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->LineWidth = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		LineStipple()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_LineStyle(tkDashStyle* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->LineStyle;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_LineStyle(tkDashStyle newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->LineStyle = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		PointColor()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_PointColor(OLE_COLOR* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->PointColor;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_PointColor(OLE_COLOR newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->PointColor = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		PointFillVisible()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_PointFillVisible(VARIANT_BOOL* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->PointFillVisible ? VARIANT_TRUE: VARIANT_FALSE;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_PointFillVisible(VARIANT_BOOL newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->PointFillVisible = newVal ? true : false;
+	return S_OK;
+}
+
+// *******************************************************
+//		VerticesType()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_PointType(tkVertexType* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->PointType;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_PointType(tkVertexType newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->PointType = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		PointLabelsVisible()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_PointLabelsVisible(VARIANT_BOOL* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->PointLabelsVisible ? VARIANT_TRUE : VARIANT_FALSE;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_PointLabelsVisible(VARIANT_BOOL newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->PointLabelsVisible = newVal ? true: false;
+	return S_OK;
+}
+
+// *******************************************************
+//		ShowTotalLength()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_ShowTotalLength(VARIANT_BOOL* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _measuring->ShowTotalLength ? VARIANT_TRUE : VARIANT_FALSE;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_ShowTotalLength(VARIANT_BOOL newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_measuring->ShowTotalLength = newVal ? true : false;
 	return S_OK;
 }

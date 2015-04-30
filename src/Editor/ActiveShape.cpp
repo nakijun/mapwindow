@@ -4,6 +4,7 @@
 #include "Shape.h"
 #include "GdiPlusHelper.h"
 #include "CollisionList.h"
+#include "AngleHelper.h"
 
 // *******************************************************
 //		SetMapCallback()
@@ -221,7 +222,7 @@ void ActiveShape::DrawLines(Gdiplus::Graphics* g, int size, Gdiplus::PointF* dat
 			int realIndex = startIndex + i;
 			length = GetSegmentLength(realIndex, errorCode);
 			totalLength += length;
-			DrawSegmentInfo(g, data[i].X, data[i].Y, data[i + 1].X, data[i + 1].Y, length, totalLength, i, false);
+			DrawSegmentInfo(g, data[i].X, data[i].Y, data[i + 1].X, data[i + 1].Y, length, totalLength, i);
 		}
 	}
 
@@ -286,7 +287,7 @@ void ActiveShape::DrawLines(Gdiplus::Graphics* g, int size, Gdiplus::PointF* dat
 
 			if (i > 0 && i < size - 1)
 			{
-				double angle = GetBearingLabelAngle(realIndex, AngleDisplayMode == CounterClockwiseBearing);
+				double angle = GetBearingLabelAngle(realIndex, BearingType == btCounterClockwise);
 
 				double dx = sin(angle / 180.0 * pi_) * 15;
 				double dy = -cos(angle / 180.0 * pi_) * 15;
@@ -313,7 +314,7 @@ void ActiveShape::DrawLines(Gdiplus::Graphics* g, int size, Gdiplus::PointF* dat
 		if (_points.size() > 0 && (_mousePoint.x != x || _mousePoint.y != y))
 		{
 			double dist = GetDynamicLineDistance();
-			DrawSegmentInfo(g, x, y, _mousePoint.x, _mousePoint.y, dist, 0.0, -1, false);
+			DrawSegmentInfo(g, x, y, _mousePoint.x, _mousePoint.y, dist, 0.0, -1);
 			g->DrawLine(&_linePen, (Gdiplus::REAL)x, (Gdiplus::REAL)y,
 				(Gdiplus::REAL)_mousePoint.x, (Gdiplus::REAL)_mousePoint.y);
 		}
@@ -343,7 +344,7 @@ void ActiveShape::DrawPolygonArea(Gdiplus::Graphics* g, Gdiplus::PointF* data, i
 // ****************************************************************
 void ActiveShape::DrawMeasuringPolyArea(Gdiplus::Graphics* g, IPoint* pnt, double area)
 {
-	if (AreaDisplayMode == admNone) return;
+	if (!ShowArea) return;
 
 	double xOrig, yOrig;
 	pnt->get_X(&xOrig);
@@ -396,23 +397,68 @@ void ActiveShape::DrawMeasuringPolyArea(Gdiplus::Graphics* g, IPoint* pnt, doubl
 	g->DrawString(str, str.GetLength(), _fontArea, origin, &_format, &_textBrush);
 }
 
+// ****************************************************************************/
+//   GetAzimuth()
+// ****************************************************************************/
+double ActiveShape::GetAzimuth(MeasurePoint* pnt1, MeasurePoint* pnt2)
+{
+	double x = pnt2->Proj.x - pnt1->Proj.x;
+	double y = pnt2->Proj.y - pnt1->Proj.y;
+	return GeometryHelper::GetPointAngleDeg(x, y);
+}
+
+// *****************************************************************
+//   GetRelativeBearing()
+// *****************************************************************
+double ActiveShape::GetRelativeBearing(int vertexIndex, bool clockwise)
+{
+	double az1 = GetAzimuth(_points[vertexIndex - 1], _points[vertexIndex]);
+	double az2 = GetAzimuth(_points[vertexIndex], _points[vertexIndex + 1]);
+	if (az2 - 180 > az1) az1 = az1 + 360;
+	if (az1 - 180 > az2) az2 = az2 + 360;
+	return clockwise ? 180 + (az1 - az2) : 180 + (az2 - az1);
+}
+
+// *****************************************************************
+//   GetBearing()
+// *****************************************************************
+CStringW ActiveShape::FormatBearing(int segmentIndex, double azimuth)
+{
+	double angle = azimuth;
+	
+	if (BearingType == btClockwise || BearingType == btCounterClockwise)
+	{
+		if (segmentIndex > 0 && segmentIndex < (int)_points.size() - 1)
+		{
+			angle = GetRelativeBearing(segmentIndex, BearingType == btClockwise);
+		}
+		else {
+			return L"";
+		}
+	}
+
+	return AngleHelper::FormatBearing(azimuth, BearingType, AngleFormat, AnglePrecision);
+}
+
 // ***************************************************************
 //		DrawSegmentInfo()
 // ***************************************************************
 void ActiveShape::DrawSegmentInfo(Gdiplus::Graphics* g, double xScr, double yScr, double xScr2, double yScr2, double length, 
-								 double totalLength, int segmentIndex, bool rumbOnly)
+								 double totalLength, int segmentIndex)
 {
-	CStringW s1, s2, s, sAz;
+	CStringW s1, s2, s, sBearing;
 
-	double x = xScr - xScr2;
-	double y = yScr - yScr2;
+	if (ShowBearing)
+	{
+		double az = 360.0 - GeometryHelper::GetPointAngleDeg(xScr - xScr2, yScr - yScr2);
+		sBearing = FormatBearing(segmentIndex, az);
+	}
 
-	double angle = 360.0 - GeometryHelper::GetPointAngle(x, y) * 180.0 / pi_;
-	
-	x = -x;
-	y = -y;
-	angle = GeometryHelper::GetPointAngle(x, y) * 180.0 / pi_;
-	angle = - (angle - 90.0);
+	double dx = xScr2 - xScr;
+	double dy = yScr2 - yScr;
+
+	double angle = GeometryHelper::GetPointAngleDeg(dx, dy);
+	angle = -(angle - 90.0);
 
 	if (HasProjection())
 	{
@@ -421,7 +467,7 @@ void ActiveShape::DrawSegmentInfo(Gdiplus::Graphics* g, double xScr, double yScr
 
 		CStringW format = L"%.";
 		CStringW temp;
-		temp.Format(L"%d", _lengthRounding);
+		temp.Format(L"%d", LengthPrecision);
 		format += temp;
 		format += "f %s";
 
@@ -471,9 +517,9 @@ void ActiveShape::DrawSegmentInfo(Gdiplus::Graphics* g, double xScr, double yScr
 	Gdiplus::RectF r1(0.0f, 0.0f, 0.0f, 0.0f);
 	Gdiplus::RectF r2(0.0f, 0.0f, 0.0f, 0.0f);
 	g->MeasureString(s, s.GetLength(), _font, Gdiplus::PointF(0.0f,0.0f), &_format, &r1);
-	g->MeasureString(sAz, sAz.GetLength(), _font, Gdiplus::PointF(0.0f,0.0f), &_format, &r2);
+	g->MeasureString(sBearing, sBearing.GetLength(), _font, Gdiplus::PointF(0.0f,0.0f), &_format, &r2);
 
-	double width = sqrt(x*x + y*y);	// width must not be longer than width of segment
+	double width = sqrt(dx*dx + dy*dy);	// width must not be longer than width of segment
 	if (r1.Width > width && segmentIndex != 0 && totalLength != 0.0)
 	{
 		// if a segment is too short, let's try to display it without total distance
@@ -500,67 +546,75 @@ void ActiveShape::DrawSegmentInfo(Gdiplus::Graphics* g, double xScr, double yScr
 		}
 
 		// ------------------------------------
-		// drawing length
+		//  drawing length
 		// ------------------------------------
-		if (!rumbOnly && _lengthDisplayMode != ldmNone)
+		if (ShowLength)
 		{
 			r1.X = (Gdiplus::REAL)(width - r1.Width) / 2.0f;
 			r1.Y = -r1.Height - 2;
-			//r1.Y = upsideDown ? -r1.Height : 0;
-			//r1.Y =  upsideDown ? 0.0f : -r1.Height;
 			g->FillRectangle(&_whiteBrush, r1);
 
 			r1.X = 0.0f;
 			r1.Width = (Gdiplus::REAL)width;
 			g->DrawString(s, s.GetLength(), _font, r1, &_format, &_textBrush);
 		}
-	
+		
 		// ------------------------------------
-		// drawing directional angles
+		//  drawing bearing
 		// ------------------------------------
-		bool bearing = (AngleDisplayMode == ClockwiseBearing || AngleDisplayMode == CounterClockwiseBearing);
-		if (DisplayAngles && !bearing)
+		if (sBearing.GetLength() > 0)
 		{
-			r2.X = (Gdiplus::REAL)(width - r2.Width) / 2.0f;
-			r2.Y = 2.0f;
-			//r2.Y =  upsideDown ? 0.0f : -r1.Height;
-			//r2.Y = upsideDown ? -r2.Height : 0;
-			g->FillRectangle(&_whiteBrush, r2);
-
-			r2.X = 0.0f;
-			r2.Width = (Gdiplus::REAL)width;
-			g->DrawString(sAz, sAz.GetLength(), _font, r2, &_format, &_textBrush);
-		}
-		g->SetTransform(&m);		// restore transform
-
-		// ------------------------------------
-		// drawing bearings
-		// ------------------------------------
-		if (DisplayAngles && bearing && segmentIndex > 0 && segmentIndex < (int)_points.size() - 1)
-		{
-			angle = GetBearingLabelAngle(segmentIndex, AngleDisplayMode == ClockwiseBearing) - 90.0;
-
-			upsideDown = false;
-			g->GetTransform(&m);
-			g->TranslateTransform((Gdiplus::REAL)xScr, (Gdiplus::REAL)yScr);
-			if (angle > 90.0)
+			if (BearingType == btClockwise || BearingType == btCounterClockwise)
 			{
-				g->RotateTransform((Gdiplus::REAL)(angle - 180.0));
-				g->TranslateTransform((Gdiplus::REAL)-r2.Width, (Gdiplus::REAL)0.0f);
-				upsideDown = true;
-			}
-			else {
-				g->RotateTransform((Gdiplus::REAL)angle);
-			}
+				r2.X = (Gdiplus::REAL)(width - r2.Width) / 2.0f;
+				r2.Y = 2.0f;
+				g->FillRectangle(&_whiteBrush, r2);
 
-			r2.X = upsideDown ? - r2.Height : r2.Height;
-			r2.Y = -r2.Height / 2.0f; 
-			g->FillRectangle(&_whiteBrush, r2);
-			g->DrawString(sAz, sAz.GetLength(), _font, r2, &_format, &_textBrush);
-
-			g->SetTransform(&m);		// restore transform
+				r2.X = 0.0f;
+				r2.Width = (Gdiplus::REAL)width;
+				g->DrawString(sBearing, sBearing.GetLength(), _font, r2, &_format, &_textBrush);
+			}
+			else
+			{
+				DrawRelativeBearing(g, segmentIndex, xScr, yScr, r2, sBearing);
+			}
 		}
+
+		g->SetTransform(&m);		// restore transform
 	}
+}
+
+// ***************************************************************
+//		DrawRelativeBearing()
+// ***************************************************************
+// Draws the relative bearing(inner or outer angle for 2 segments).
+void ActiveShape::DrawRelativeBearing(Gdiplus::Graphics* g, int segmentIndex, double xScr, double yScr, Gdiplus::RectF r2, CStringW sBearing)
+{
+	// TODO: do we need both segmentIndex and xScr, yScr
+
+	double angle = GetBearingLabelAngle(segmentIndex, BearingType == btClockwise) - 90.0;
+
+	bool upsideDown = false;
+
+	Gdiplus::Matrix m;
+	g->GetTransform(&m);
+	g->TranslateTransform((Gdiplus::REAL)xScr, (Gdiplus::REAL)yScr);
+	if (angle > 90.0)
+	{
+		g->RotateTransform((Gdiplus::REAL)(angle - 180.0));
+		g->TranslateTransform((Gdiplus::REAL) - r2.Width, (Gdiplus::REAL)0.0f);
+		upsideDown = true;
+	}
+	else {
+		g->RotateTransform((Gdiplus::REAL)angle);
+	}
+
+	r2.X = upsideDown ? -r2.Height : r2.Height;
+	r2.Y = -r2.Height / 2.0f;
+	g->FillRectangle(&_whiteBrush, r2);
+	g->DrawString(sBearing, sBearing.GetLength(), _font, r2, &_format, &_textBrush);
+
+	g->SetTransform(&m);		// restore transform
 }
 
 // ***************************************************************
@@ -665,10 +719,10 @@ bool ActiveShape::PartIsSelected(int partIndex)
 
 bool ActiveShape::VerticesAreVisible()
 {
-	return _verticesVisible && !OverlayTool;
+	return PointsVisible && !OverlayTool;
 }
 
 bool ActiveShape::PointLabelsAreVisible()
 {
-	return _pointLabelsVisible && !OverlayTool;
+	return PointLabelsVisible && !OverlayTool;
 }

@@ -26,7 +26,6 @@ namespace Utility
 	int Factorial(int n);
 	double atof_custom(CString s);
 	double FloatRound(double doValue, int nPrecision);
-	CStringW FormatAngle(double angle, bool withDecimals = false);
 	bool FloatsEqual(const float &a, const float &b);
 
 	// files, !!! all parameters should be CStringW; we use Unicode !!!
