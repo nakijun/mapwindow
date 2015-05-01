@@ -102,6 +102,17 @@ bool CMapView::UndoCore(bool shift)
 		}
 	}
 
+	if (m_cursorMode == cmMeasure)
+	{
+		VARIANT_BOOL result = VARIANT_FALSE;
+		_measuring->UndoPoint(&result);
+		FireMeasuringChanged(tkMeasuringAction::PointRemoved);
+		if (result) {
+			Redraw2(RedrawSkipAllLayers);
+			return true;
+		}
+	}
+
 	VARIANT_BOOL vb;
 	if (shift) {
 		_undoList->Redo(VARIANT_TRUE, &vb);
@@ -1279,13 +1290,13 @@ void CMapView::OnRButtonDown(UINT nFlags, CPoint point)
 
 	if (_doTrapRMouseDown == TRUE)
 	{
-		VARIANT_BOOL redraw;
-		if( m_cursorMode == cmMeasure)
-		{
-			((CMeasuring*)_measuring)->UndoPoint(&redraw);
-			FireMeasuringChanged(tkMeasuringAction::PointRemoved);
-			_canUseMainBuffer = false;
-		}
+		//VARIANT_BOOL redraw;
+		//if( m_cursorMode == cmMeasure)
+		//{
+		//	((CMeasuring*)_measuring)->UndoPoint(&redraw);
+		//	FireMeasuringChanged(tkMeasuringAction::PointRemoved);
+		//	_canUseMainBuffer = false;
+		//}
 
 		_reverseZooming = true;
 
@@ -1300,9 +1311,9 @@ void CMapView::OnRButtonDown(UINT nFlags, CPoint point)
 			::SetCursor( _cursorZoomout );
 		}
 
-		if( redraw ) {
+		/*if( redraw ) {
 			this->Refresh();
-		}
+		}*/
 	}
 }
 

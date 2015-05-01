@@ -11,6 +11,7 @@ public:
 		_linePen(Gdiplus::Color::Orange, 2.0f), _fillBrush(Gdiplus::Color::Orange),
 		_redPen(Gdiplus::Color::Red, 1.0f), _redBrush(Gdiplus::Color::LightCoral)
 	{
+		RELATIVE_HORIZONTAL_PADDING = 1.3;
 		_font = Utility::GetGdiPlusFont("Times New Roman", 9);
 		_fontArea = Utility::GetGdiPlusFont("Arial", 12);
 		_format.SetAlignment(Gdiplus::StringAlignmentCenter);
@@ -36,6 +37,7 @@ public:
 		AreaDisplayMode = admMetric;
 		BearingType = btAbsolute;
 		ShowBearing = false;
+		ShowLength = true;
 		LengthPrecision = 1;
 		AreaPrecision = 1;
 		AnglePrecision = 0;
@@ -45,6 +47,7 @@ public:
 		ShowTotalLength = true;
 		PointsVisible = true;
 		PointLabelsVisible = true;
+		AngleFormat = afDegrees;
 	};
 
 	virtual ~ActiveShape(void) {
@@ -62,6 +65,7 @@ private:
 	Gdiplus::SolidBrush _fillBrush;
 	Gdiplus::SolidBrush _blueBrush;
 	Gdiplus::SolidBrush _redBrush;
+	double RELATIVE_HORIZONTAL_PADDING;
 
 protected:
 	enum MixedShapePart
@@ -163,4 +167,8 @@ public:
 	void DrawPolygonArea(Gdiplus::Graphics* g, Gdiplus::PointF* data, int size, bool dynamicPoly);
 	void DrawLines(Gdiplus::Graphics* g, int size, Gdiplus::PointF* data, bool dynamicBuffer, int partIndex, CCollisionList& collisionList);
 	void DrawRelativeBearing(Gdiplus::Graphics* g, int segmentIndex, double xScr, double yScr, Gdiplus::RectF r2, CStringW sBearing);
+	void PrepareSegmentLength(Gdiplus::Graphics* g, double length, double totalLength, double screenLength, int segmentIndex, CStringW& sLength, Gdiplus::RectF& rect);
+	CStringW FormatLength(double length, CStringW format, bool unknownUnits);
+	void PrepareSegmentBearing(Gdiplus::Graphics* g, int segmentIndex, double dx, double dy, CStringW& sBearing, Gdiplus::RectF& rect);
+	void DrawSegmentLabel(Gdiplus::Graphics* g, CStringW text, Gdiplus::RectF rect, double screenLength, bool aboveLine);
 };

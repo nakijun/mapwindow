@@ -21,6 +21,7 @@ namespace Utility
 	CStringW ConvertFromUtf8(CStringA utf8);
 	
 	// numbers
+	CStringW GetUnitsFormat(int precision);
 	CString FormatNumber(double val, CString& sFormat);
 	int Rint(double value);
 	int Factorial(int n);
@@ -82,6 +83,7 @@ namespace Utility
 	tkLabelPositioning LabelPositionForShapeType(ShpfileType shpType);
 
 	// units conversions
+	CStringW GetLocalizedUnitsText(tkUnitsOfMeasure units);
 	double GetConversionFactor(tkUnitsOfMeasure Units);
 	bool ConvertDistance(tkUnitsOfMeasure source, tkUnitsOfMeasure target, double& value);
 	CString GetUnitOfMeasureText(tkUnitsOfMeasure units);

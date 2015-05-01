@@ -596,6 +596,27 @@ namespace Utility
 	
 #pragma region Unit conversion
 	// ****************************************************************
+	//		GetLocalizedUnitsText()
+	// ****************************************************************
+	CStringW Utility::GetLocalizedUnitsText(tkUnitsOfMeasure units)
+	{
+		switch (units)
+		{
+			case umMiles:
+				return m_globalSettings.GetLocalizedString(tkLocalizedStrings::lsMiles);
+			case umFeets:
+				return m_globalSettings.GetLocalizedString(tkLocalizedStrings::lsFeet);
+			case umMeters:
+				return m_globalSettings.GetLocalizedString(tkLocalizedStrings::lsMeters);
+			case umKilometers:
+				return m_globalSettings.GetLocalizedString(tkLocalizedStrings::lsKilometers);
+			default:
+				USES_CONVERSION;
+				return A2W(Utility::GetUnitOfMeasureText(units));
+		}
+	}
+
+	// ****************************************************************
 	//		GetUnitOfMeasureText
 	// ****************************************************************
 	// Returns the short name for units of measure
@@ -672,7 +693,15 @@ namespace Utility
 #pragma endregion
 
 #pragma region Numbers
-
+	// *********************************************************
+	//		GetNumberFormat()
+	// *********************************************************
+	CStringW Utility::GetUnitsFormat(int precision)
+	{
+		CStringW temp;
+		temp.Format(L"%d", precision);
+		return L"%." + temp + L"f %s";
+	}
 
 	// *********************************************************
 	//		FormatNumber()

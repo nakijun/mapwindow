@@ -441,146 +441,171 @@ CStringW ActiveShape::FormatBearing(int segmentIndex, double azimuth)
 }
 
 // ***************************************************************
-//		DrawSegmentInfo()
+//		FormatLength()
 // ***************************************************************
-void ActiveShape::DrawSegmentInfo(Gdiplus::Graphics* g, double xScr, double yScr, double xScr2, double yScr2, double length, 
-								 double totalLength, int segmentIndex)
+CStringW ActiveShape::FormatLength(double length, CStringW format, bool unknownUnits)
 {
-	CStringW s1, s2, s, sBearing;
+	CStringW s;
 
-	if (ShowBearing)
+	if (unknownUnits)
 	{
-		double az = 360.0 - GeometryHelper::GetPointAngleDeg(xScr - xScr2, yScr - yScr2);
-		sBearing = FormatBearing(segmentIndex, az);
+		CStringW mu = m_globalSettings.GetLocalizedString(tkLocalizedStrings::lsMapUnits);
+		s.Format(format, length, mu);
+		return s;
 	}
 
+	tkUnitsOfMeasure units = umMeters;
+
+	switch (LengthUnits)
+	{
+		case ldmMetric:
+			if (length > 1000.0)
+			{
+				Utility::ConvertDistance(units, umKilometers, length);
+				units = umKilometers;
+			}
+			else if (length < 1.0)
+			{
+				Utility::ConvertDistance(units, umCentimeters, length);
+				units = umCentimeters;
+			}
+			break;
+		case ldmMilesAndFeet:
+			Utility::ConvertDistance(units, umMiles, length);
+			units = umMiles;
+
+			if (length < 1.0)
+			{
+				Utility::ConvertDistance(umMiles, umFeets, length);
+				units = umFeets;
+			}
+			break;
+	}
+	
+	s.Format(format, length, Utility::GetLocalizedUnitsText(units));
+	return s;	
+}
+
+// ***************************************************************
+//		DrawSegmentInfo()
+// ***************************************************************
+void ActiveShape::PrepareSegmentLength(Gdiplus::Graphics* g, double length, double totalLength, double screenLength, int segmentIndex, CStringW& sLength, Gdiplus::RectF& rect)
+{
+	bool unknownUnits = !HasProjection();
+	CStringW format = Utility::GetUnitsFormat(LengthPrecision);
+	Gdiplus::PointF pnt(0.0f, 0.0f);
+
+	sLength = FormatLength(length, format, unknownUnits);
+
+	bool allowTotalLength = segmentIndex != 0 && totalLength != 0.0 && DrawAccumalatedLength();
+	if (allowTotalLength)
+	{
+		CStringW sLength2 = FormatLength(totalLength, format, unknownUnits);
+		CStringW sLengthTotal;
+		sLengthTotal.Format(L"%s (%s)", sLength, sLength2);
+		
+		g->MeasureString(sLengthTotal, sLengthTotal.GetLength(), _font, pnt, &_format, &rect);
+		if (rect.Width * RELATIVE_HORIZONTAL_PADDING <= screenLength) {
+			sLength = sLengthTotal;
+			return;
+		}
+	}
+
+	// if a segment is too short, let's try to display it without total distance
+	g->MeasureString(sLength, sLength.GetLength(), _font, pnt, &_format, &rect);
+}
+
+// ***************************************************************
+//		PrepareSegmentBearing()
+// ***************************************************************
+void ActiveShape::PrepareSegmentBearing(Gdiplus::Graphics* g, int segmentIndex, double dx, double dy, CStringW& sBearing, Gdiplus::RectF& rect)
+{
+	double az = 360.0 - GeometryHelper::GetPointAngleDeg(-dx, -dy);
+	sBearing = FormatBearing(segmentIndex, az);
+	g->MeasureString(sBearing, sBearing.GetLength(), _font, Gdiplus::PointF(0.0f, 0.0f), &_format, &rect);
+}
+
+// ***************************************************************
+//		DrawSegmentLabel()
+// ***************************************************************
+void ActiveShape::DrawSegmentLabel(Gdiplus::Graphics* g, CStringW text, Gdiplus::RectF rect, double screenLength, bool aboveLine)
+{
+	rect.X = (Gdiplus::REAL)(screenLength - rect.Width) / 2.0f;
+	rect.Y = aboveLine ? -rect.Height - 2.0f : 2.0f;
+	g->FillRectangle(&_whiteBrush, rect);
+
+	rect.X = 0.0f;
+	rect.Width = (Gdiplus::REAL)screenLength;
+	g->DrawString(text, text.GetLength(), _font, rect, &_format, &_textBrush);
+}
+
+// ***************************************************************
+//		DrawSegmentInfo()
+// ***************************************************************
+void ActiveShape::DrawSegmentInfo(Gdiplus::Graphics* g, double xScr, double yScr, double xScr2, double yScr2, double length, double totalLength, int segmentIndex)
+{
+	if (!ShowBearing && !ShowLength) {
+		return;
+	}
+
+	// screen length of segment
 	double dx = xScr2 - xScr;
 	double dy = yScr2 - yScr;
+	double screenLength = sqrt(dx*dx + dy*dy);
+	bool relativeBearing = BearingType == btClockwise || BearingType == btCounterClockwise;
 
+	// rotation angle for labels
 	double angle = GeometryHelper::GetPointAngleDeg(dx, dy);
 	angle = -(angle - 90.0);
 
-	if (HasProjection())
+	// length string
+	CStringW sLength;
+	Gdiplus::RectF rectLength;
+	if (ShowLength) {
+		PrepareSegmentLength(g, length, totalLength, screenLength, segmentIndex, sLength, rectLength);
+	}
+
+	// bearing string
+	CStringW sBearing;
+	Gdiplus::RectF rectBearing;
+	if (ShowBearing) {
+		PrepareSegmentBearing(g, segmentIndex, dx, dy, sBearing, rectBearing);
+	}
+
+	Gdiplus::Matrix m;
+	g->GetTransform(&m);
+	g->TranslateTransform((Gdiplus::REAL)xScr, (Gdiplus::REAL)yScr);
+
+	bool upsideDown = false;
+	if (angle < -90.0)
 	{
-		CStringW m = m_globalSettings.GetLocalizedString(tkLocalizedStrings::lsMeters);
-		CStringW km = m_globalSettings.GetLocalizedString(tkLocalizedStrings::lsKilometers);
-
-		CStringW format = L"%.";
-		CStringW temp;
-		temp.Format(L"%d", LengthPrecision);
-		format += temp;
-		format += "f %s";
-
-		if (length > 1000.0)
-		{
-			s1.Format(format, length / 1000.0, km);
-		}
-		else
-		{
-			s1.Format(format, length, m);
-		}
-
-		if (segmentIndex != 0 && totalLength != 0.0 && DrawAccumalatedLength())
-		{
-			if (totalLength > 1000.0)
-			{
-				s2.Format(format, totalLength / 1000.0, km);
-			}
-			else
-			{
-				s2.Format(format, totalLength, m);
-			}
-			s.Format(L"%s (%s)", s1, s2);
-		}
-		else
-		{
-			s = s1;
-		}
+		g->RotateTransform((Gdiplus::REAL)(angle + 180.0));
+		g->TranslateTransform((Gdiplus::REAL)-screenLength, (Gdiplus::REAL)0.0f);
+		upsideDown = true;
 	}
 	else
 	{
-		// no projection; display map units
-		USES_CONVERSION;
-		CStringW mu = m_globalSettings.GetLocalizedString(tkLocalizedStrings::lsMapUnits);	
-		s1.Format(L"%.1f %s", length, mu);
-		if (segmentIndex != 0 && totalLength != 0.0)
-		{
-			s2.Format(L"%.1f %s", totalLength, mu);
-			s.Format(L"%s (%s)", s1, s2);
-		}
-		else
-		{
-			s = s1;
-		}
+		g->RotateTransform((Gdiplus::REAL)angle);
 	}
 
-	Gdiplus::RectF r1(0.0f, 0.0f, 0.0f, 0.0f);
-	Gdiplus::RectF r2(0.0f, 0.0f, 0.0f, 0.0f);
-	g->MeasureString(s, s.GetLength(), _font, Gdiplus::PointF(0.0f,0.0f), &_format, &r1);
-	g->MeasureString(sBearing, sBearing.GetLength(), _font, Gdiplus::PointF(0.0f,0.0f), &_format, &r2);
+	bool hasBearing = ShowBearing && !relativeBearing;
 
-	double width = sqrt(dx*dx + dy*dy);	// width must not be longer than width of segment
-	if (r1.Width > width && segmentIndex != 0 && totalLength != 0.0)
+	if (ShowLength && rectLength.Width * RELATIVE_HORIZONTAL_PADDING < screenLength)
 	{
-		// if a segment is too short, let's try to display it without total distance
-		g->MeasureString(s1, s1.GetLength(), _font, Gdiplus::PointF(0.0f,0.0f), &_format, &r1);
-		s = s1;
+		// TODO: add parameter to change above / below position
+		DrawSegmentLabel(g, sLength, rectLength, screenLength, hasBearing ? false : true);	
 	}
-
-	if (width >= r1.Width * 1.5)		// TODO: 1.5 = padding; use parameter
-	{
-		Gdiplus::Matrix m;
-		g->GetTransform(&m);
-		g->TranslateTransform((Gdiplus::REAL)xScr, (Gdiplus::REAL)yScr);
-
-		bool upsideDown = false;
-		if (angle < -90.0)
-		{
-			g->RotateTransform((Gdiplus::REAL)(angle + 180.0));
-			g->TranslateTransform((Gdiplus::REAL)-width, (Gdiplus::REAL)0.0f);
-			upsideDown = true;
-		}
-		else
-		{
-			g->RotateTransform((Gdiplus::REAL)angle);
-		}
-
-		// ------------------------------------
-		//  drawing length
-		// ------------------------------------
-		if (ShowLength)
-		{
-			r1.X = (Gdiplus::REAL)(width - r1.Width) / 2.0f;
-			r1.Y = -r1.Height - 2;
-			g->FillRectangle(&_whiteBrush, r1);
-
-			r1.X = 0.0f;
-			r1.Width = (Gdiplus::REAL)width;
-			g->DrawString(s, s.GetLength(), _font, r1, &_format, &_textBrush);
-		}
 		
-		// ------------------------------------
-		//  drawing bearing
-		// ------------------------------------
-		if (sBearing.GetLength() > 0)
-		{
-			if (BearingType == btClockwise || BearingType == btCounterClockwise)
-			{
-				r2.X = (Gdiplus::REAL)(width - r2.Width) / 2.0f;
-				r2.Y = 2.0f;
-				g->FillRectangle(&_whiteBrush, r2);
+	if (hasBearing && rectBearing.Width * RELATIVE_HORIZONTAL_PADDING < screenLength)
+	{
+		DrawSegmentLabel(g, sBearing, rectBearing, screenLength, true);
+	}
 
-				r2.X = 0.0f;
-				r2.Width = (Gdiplus::REAL)width;
-				g->DrawString(sBearing, sBearing.GetLength(), _font, r2, &_format, &_textBrush);
-			}
-			else
-			{
-				DrawRelativeBearing(g, segmentIndex, xScr, yScr, r2, sBearing);
-			}
-		}
+	g->SetTransform(&m);		// restore transform
 
-		g->SetTransform(&m);		// restore transform
+	if (ShowBearing && relativeBearing)
+	{
+		DrawRelativeBearing(g, segmentIndex, xScr, yScr, rectBearing, sBearing);
 	}
 }
 
@@ -590,7 +615,9 @@ void ActiveShape::DrawSegmentInfo(Gdiplus::Graphics* g, double xScr, double yScr
 // Draws the relative bearing(inner or outer angle for 2 segments).
 void ActiveShape::DrawRelativeBearing(Gdiplus::Graphics* g, int segmentIndex, double xScr, double yScr, Gdiplus::RectF r2, CStringW sBearing)
 {
-	// TODO: do we need both segmentIndex and xScr, yScr
+	if (segmentIndex < 1 || segmentIndex >= (int)_points.size() - 1) {
+		return;
+	}
 
 	double angle = GetBearingLabelAngle(segmentIndex, BearingType == btClockwise) - 90.0;
 

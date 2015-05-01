@@ -2087,6 +2087,15 @@ enum tkScalebarUnits
 		lsFeet = 8,
 		lsLatitude = 9,
 		lsLongitude = 10,
+		lsRadians = 11,
+		lsNorthEast = 12,
+		lsSouthEast = 13,
+		lsSouthWest = 14,
+		lsNorthWest = 15,
+		lsNorth = 16,
+		lsEast = 17,
+		lsSouth = 18,
+		lsWest = 19,
 	} tkLocalizedStrings;
 
 	/************************* tkProjectionParameter **************************/

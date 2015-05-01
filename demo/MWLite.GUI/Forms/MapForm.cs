@@ -177,6 +177,10 @@ namespace MWLite.GUI.Forms
                 {
                     _identifierContextMenu.Menu.Show(axMap1, e.x, e.y);
                 }
+                else if (axMap1.CursorMode == tkCursorMode.cmMeasure)
+                {
+                    contextMenuStrip1.Show(axMap1, e.x, e.y);
+                }
             }
         }
 
@@ -239,6 +243,17 @@ namespace MWLite.GUI.Forms
         private void AxMap1FileDropped(object sender, _DMapEvents_FileDroppedEvent e)
         {
             Helpers.LayerHelper.AddLayer(this.axMap1.FileManager.Open(e.filename));
+        }
+
+        private void mnuMeasuringOptions_Click(object sender, EventArgs e)
+        {
+            using (var form = new MeasuringForm(Map.Measuring))
+            {
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    Map.Redraw2(tkRedrawType.RedrawSkipAllLayers);
+                }
+            }
         }
     }
 }

@@ -5,7 +5,7 @@
 // *********************************************************
 //		FormatAngle()
 // *********************************************************	
-CStringW AngleHelper::FormatAngle(double angle, tkAngleFormat format, int anglePrecision, bool adjustValue)
+CStringW AngleHelper::FormatAngle(double angle, tkAngleFormat angleType, int precision, bool reducedBearing, bool adjustValue)
 {
 	if (adjustValue)
 	{
@@ -14,42 +14,62 @@ CStringW AngleHelper::FormatAngle(double angle, tkAngleFormat format, int angleP
 	}
 
 	CStringW s;
-	int val;
-	if (format == tkAngleFormat::afDegrees)
+
+	CStringW format;
+	format.Format(L"%d", precision);
+	format = L"%." + format + L"f";
+	
+	if (angleType == afRadians)
 	{
-		val = (int)Utility::Rint(angle * 10.0);
-		s.Format(L"%.1f°", val / 10.0);
+		s.Format(format + L" " + m_globalSettings.GetLocalizedString(lsRadians), angle / 180.0 * pi_);
 		return s;
 	}
+
+	if (angleType == tkAngleFormat::afDegrees)
+	{
+		s.Format(format + L"°", angle);		//L"%.1f°"
+		return s;
+	}
+
+	// minutes
+	format = "%02d";	// ignore fractional part for minutes and seconds
+	CStringW degreeFormat = reducedBearing ? "%02d° " : "%d° ";
 
 	int degrees = (int)floor(angle);
-	double delta = angle - degrees;
-	if (format == tkAngleFormat::afMinutes)
+	double fMinutes = (angle - degrees) * 60.0;
+
+	if (angleType == tkAngleFormat::afMinutes)
 	{
-		val = Utility::Rint(60.0 * delta);
-		if (val == 60) {
-			val = 0;
+		int minutes = Utility::Rint(fMinutes);
+		if (minutes == 60)
+		{
+			minutes = 0;
 			degrees += 1;
 		}
-		s.Format(L"%d° %d'", degrees, val);
+
+		s.Format(degreeFormat + format + "'", degrees, minutes);
 		return s;
 	}
 
-	int minutes = (int)floor(60.0 * delta);
+	// seconds
+	if (angleType == afSeconds)
+	{
+		int minutes = (int)floor(fMinutes);
 
-	delta = delta - minutes / 60.0;
-	double seconds = delta*3600.0;
+		double fSeconds = (angle - degrees - minutes / 60.0) * 3600.0;
+		int seconds = Utility::Rint(fSeconds);
 
-	// TODO: implement formatting for seconds
+		s.Format(degreeFormat + "%02d' " + format + "\"", degrees, minutes, seconds);
+		return s;
+	}
 
-	s.Format(L"%d° %2d' %2d\"", degrees, minutes, (int)floor(seconds));
-	return s;
+	return L"";
 }
 
 // ***************************************************************
 //		FormatBearing()
 // ***************************************************************
-CStringW AngleHelper::FormatBearing(double angle, tkBearingType bearingType, tkAngleFormat format, int precision, bool adjustValue)
+CStringW AngleHelper::FormatBearing(double angle, tkBearingType bearingType, tkAngleFormat angleFormat, int precision)
 {
 	CStringW s;
 	switch (bearingType)
@@ -57,12 +77,10 @@ CStringW AngleHelper::FormatBearing(double angle, tkBearingType bearingType, tkA
 		case btAbsolute:
 		case btClockwise:
 		case btCounterClockwise:
-			s = FormatAngle(angle, format, false);
-			break;
+			return FormatAngle(angle, angleFormat, precision, false);
 		case btReducedNDE:
 		case btReducedNED:
-			s = GetReducedBearing(angle, bearingType, format, precision);
-			break;
+			return GetReducedBearing(angle, bearingType, angleFormat, precision);
 	}
 
 	return L"";
@@ -79,16 +97,51 @@ CStringW AngleHelper::GetReducedBearing(double azimuth, tkBearingType bearing, t
 
 	angle = ((count == 0) || (count == 2)) ? angle - count * 90 : (count + 1) * 90 - angle;
 
-	tkLocalizedStrings ls;
-	//switch (count)
-	//{
-	//	case 0:	ls = tkLocalizedStrings::lsNorthEast;	break;
-	//	case 1: ls = tkLocalizedStrings::lsSouthEast;	break;
-	//	case 2:	ls = tkLocalizedStrings::lsSouthWest;	break;
-	//	case 3: ls = tkLocalizedStrings::lsNorthWest;	break;
-	//}
+	if (bearing == btReducedNED)
+	{
+		tkLocalizedStrings ls;
+		switch (count)
+		{
+			case 0:	ls = lsNorthEast;	break;
+			case 1: ls = lsSouthEast;	break;
+			case 2:	ls = lsSouthWest;	break;
+			case 3: ls = lsNorthWest;	break;
+		}
+		
+		CStringW s = m_globalSettings.GetLocalizedString(ls);
+		s.Format(L"%s: %s", s, FormatAngle(angle, format, precision, true));
+		return s;
+	}
+	
+	if (bearing == btReducedNDE)
+	{
+		tkLocalizedStrings ls1;
+		tkLocalizedStrings ls2;
+		switch (count)
+		{
+			case 0:	
+				ls1 = lsNorth;
+				ls2 = lsEast;
+				break;
+			case 1: 
+				ls1 = lsSouth;	
+				ls2 = lsEast;
+				break;
+			case 2:	
+				ls1 = lsSouth;	
+				ls2 = lsWest;
+				break;
+			case 3: 
+				ls1 = lsNorth;
+				ls2 = lsWest;
+				break;
+		}
 
-	CStringW rhumb;
-	rhumb.Format(L"%s:%s", m_globalSettings.GetLocalizedString(ls), FormatAngle(angle, format, precision));
-	return rhumb;
+		CStringW s1 = m_globalSettings.GetLocalizedString(ls1);
+		CStringW s2 = m_globalSettings.GetLocalizedString(ls2);
+		s1.Format(L"%s %s %s", s1, FormatAngle(angle, format, precision, true), s2);
+		return s1;
+	}
+
+	return L"";
 }
