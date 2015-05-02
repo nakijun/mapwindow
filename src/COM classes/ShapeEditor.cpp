@@ -9,6 +9,7 @@
 #include "GeosHelper.h"
 #include "EditorHelper.h"
 #include "ShapefileHelper.h"
+#include "MeasuringHelper.h"
 
 // *******************************************************
 //		GetShape
@@ -1679,5 +1680,44 @@ STDMETHODIMP CShapeEditor::put_ShowLength(VARIANT_BOOL newVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 	_activeShape->ShowLength = newVal ? true : false;
+	return S_OK;
+}
+
+// *******************************************************
+//		Serialize()
+// *******************************************************
+STDMETHODIMP CShapeEditor::Serialize(BSTR* retVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+
+	CPLXMLNode* node = MeasuringHelper::Serialize(_activeShape, "ShapeEditorClass");
+	Utility::SerializeAndDestroyXmlTree(node, retVal);
+
+	return S_OK;
+}
+
+// *******************************************************
+//		Deserialize()
+// *******************************************************
+STDMETHODIMP CShapeEditor::Deserialize(BSTR state, VARIANT_BOOL* retVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+
+	USES_CONVERSION;
+	*retVal = VARIANT_FALSE;
+
+	CString s = OLE2CA(state);
+	CPLXMLNode* node = CPLParseXMLString(s.GetString());
+	if (node)
+	{
+		CPLXMLNode* nodeEditor = CPLGetXMLNode(node, "=ShapeEditorClass");
+		if (nodeEditor)
+		{
+			MeasuringHelper::Deserialize(_activeShape, nodeEditor);
+			*retVal = VARIANT_TRUE;
+		}
+		CPLDestroyXMLNode(node);
+	}
+
 	return S_OK;
 }

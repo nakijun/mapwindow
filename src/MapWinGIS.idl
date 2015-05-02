@@ -3312,6 +3312,8 @@ enum tkScalebarUnits
 		[propput, id(58)] HRESULT ShowBearing([in] VARIANT_BOOL newVal);
 		[propget, id(59)] HRESULT ShowLength([out, retval] VARIANT_BOOL* pVal);
 		[propput, id(59)] HRESULT ShowLength([in] VARIANT_BOOL newVal);
+		[id(60)] HRESULT Serialize([out, retval] BSTR* retVal);
+		[id(61)] HRESULT Deserialize([in] BSTR state, [out, retval] VARIANT_BOOL* retVal);
 	};
 
 	
@@ -5609,6 +5611,8 @@ interface IMeasuring : IDispatch{
 	[propput, id(37)] HRESULT ShowTotalLength([in] VARIANT_BOOL newVal);
 	[propget, id(38)] HRESULT UndoButton([out, retval] tkUndoShortcut* pVal);
 	[propput, id(38)] HRESULT UndoButton([in] tkUndoShortcut newVal);
+	[id(39)] HRESULT Serialize([out, retval]BSTR* retVal);
+	[id(40)] HRESULT Deserialize([in] BSTR state, [out, retval] VARIANT_BOOL* retVal);
 };
 
 [

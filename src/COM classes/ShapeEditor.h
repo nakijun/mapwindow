@@ -241,5 +241,7 @@ public:
 	STDMETHOD(put_ShowBearing)(VARIANT_BOOL newVal);
 	STDMETHOD(get_ShowLength)(VARIANT_BOOL* pVal);
 	STDMETHOD(put_ShowLength)(VARIANT_BOOL newVal);
+	STDMETHOD(Serialize)(BSTR* retVal);
+	STDMETHOD(Deserialize)(BSTR state, VARIANT_BOOL* retVal);
 };
 OBJECT_ENTRY_AUTO(__uuidof(ShapeEditor), CShapeEditor)

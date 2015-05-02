@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "measuring.h"
+#include "MeasuringHelper.h"
 
 // *****************************************************************
 //	   get_ErrorMsg()
@@ -535,5 +536,44 @@ STDMETHODIMP CMeasuring::put_UndoButton(tkUndoShortcut newVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 	_undoButton = newVal;
+	return S_OK;
+}
+
+// *******************************************************
+//		Serialize()
+// *******************************************************
+STDMETHODIMP CMeasuring::Serialize(BSTR* retVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+
+	CPLXMLNode* node = MeasuringHelper::Serialize(_measuring, "MeasuringClass");
+	Utility::SerializeAndDestroyXmlTree(node, retVal);
+
+	return S_OK;
+}
+
+// *******************************************************
+//		Deserialize()
+// *******************************************************
+STDMETHODIMP CMeasuring::Deserialize(BSTR state, VARIANT_BOOL* retVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+
+	USES_CONVERSION;
+	*retVal = VARIANT_FALSE;
+
+	CString s = OLE2CA(state);
+	CPLXMLNode* node = CPLParseXMLString(s.GetString());
+	if (node)
+	{
+		CPLXMLNode* nodeMeasuring = CPLGetXMLNode(node, "=MeasuringClass");
+		if (nodeMeasuring)
+		{
+			MeasuringHelper::Deserialize(_measuring, nodeMeasuring);
+			*retVal = VARIANT_TRUE;
+		}
+		CPLDestroyXMLNode(node);
+	}
+
 	return S_OK;
 }

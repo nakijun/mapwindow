@@ -126,6 +126,8 @@ public:
 	STDMETHOD(put_ShowTotalLength)(VARIANT_BOOL newVal);
 	STDMETHOD(get_UndoButton)(tkUndoShortcut* pVal);
 	STDMETHOD(put_UndoButton)(tkUndoShortcut newVal);
+	STDMETHOD(Serialize)(BSTR* retVal);
+	STDMETHOD(Deserialize)(BSTR state, VARIANT_BOOL* retVal);
 
 private:
 	long _lastErrorCode;
