@@ -141,6 +141,7 @@ BEGIN_EVENT_MAP(CMapView, COleControl)
 	EVENT_CUSTOM_ID("BackgroundLoadingStarted", eventidBackgroundLoadingStarted, FireBackgroundLoadingStarted, VTS_I4 VTS_I4)
 	EVENT_CUSTOM_ID("BackgroundLoadingFinished", eventidBackgroundLoadingFinished, FireBackgroundLoadingFinished, VTS_I4 VTS_I4 VTS_I4 VTS_I4)
 	EVENT_CUSTOM_ID("GridOpened", eventidGridOpened, FireGridOpened, VTS_I4 VTS_BSTR VTS_I4 VTS_BOOL)
+	EVENT_CUSTOM_ID("OnDrawBackBuffer2", eventidOnDrawBackBuffer2, FireOnDrawBackBuffer2, VTS_I4 VTS_I4 VTS_I4 VTS_I4 VTS_I4)
 	EVENT_STOCK_DBLCLICK()
 	//}}AFX_EVENT_MAP
 	
@@ -288,7 +289,10 @@ void CMapView::Startup()
 	((CUndoList*)_undoList)->SetMapCallback(this);
 
 	InitProjections();
-	
+
+	// let them all work by default 
+	_customDrawingFlags = (tkCustomDrawingFlags)(BeforeAfterDrawing | OnDrawBackBufferBitmapData | OnDrawBackBufferHdc);
+
 	GetMeasuringBase()->SetMapCallback(this, ShapeInputMode::simMeasuring);
 	_shapeEditor->SetMapCallback(this);
 	_geodesicShape->SetMapCallback(this);

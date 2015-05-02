@@ -58,6 +58,19 @@ interface IOgrLayer;
 interface IUndoList;
 interface IIdentifier;
 
+/************************** tkCustomDrawingFlags Enumeration **********************/
+typedef
+[
+	uuid(514343D6-530D-4748-A0F5-B33F883BED3E),
+	helpstring("tkCustomDrawingFlags"),
+]
+enum tkCustomDrawingFlags {
+	CustomDrawingNone = 0,
+	OnDrawBackBufferHdc = 1,
+	OnDrawBackBufferBitmapData = 2,
+	BeforeAfterDrawing = 4,
+}tkCustomDrawingFlags;
+
 /************************** tkAngleDisplay Enumeration **********************/
 typedef
 [
@@ -5921,6 +5934,7 @@ library MapWinGIS
 			[id(243), readonly] IIdentifier* Identifier;
 			[id(235), readonly] IShapeEditor* ShapeEditor;
 			[id(196), readonly] IMeasuring* Measuring;
+			[id(250)] tkCustomDrawingFlags CustomDrawingFlags;
 
 #ifdef OLD_API
 			[id(14)] VARIANT_BOOL DoubleBuffer;
@@ -6314,6 +6328,7 @@ library MapWinGIS
 			
 			[id(203)] VARIANT_BOOL FindSnapPoint([in]double tolerance, [in]double xScreen, [in]double yScreen, [in, out]double* xFound, [in, out]double* yFound);
 			[id(244)] void Undo();
+			
 
 			//}}AFX_ODL_METHOD
 	};
@@ -6375,6 +6390,7 @@ library MapWinGIS
 			[id(32)] void BackgroundLoadingStarted(LONG TaskId, LONG LayerHandle);
 			[id(33)] void BackgroundLoadingFinished(LONG TaskId, LONG LayerHandle, LONG NumFeatures, LONG NumLoaded);
 			[id(34)] void GridOpened(LONG LayerHandle, BSTR gridFilename, LONG bandIndex, VARIANT_BOOL isUsingProxy);
+			[id(35)] void OnDrawBackBuffer2(LONG height, LONG Width, LONG Stride, LONG pixelFormat, LONG scan0);
 		//}}AFX_ODL_EVENT
 	};
 

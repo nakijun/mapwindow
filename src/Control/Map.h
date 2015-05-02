@@ -683,6 +683,8 @@ public:
 		{ FireEvent(eventidBackgroundLoadingFinished, EVENT_PARAM(VTS_I4 VTS_I4 VTS_I4 VTS_I4), TaskId, LayerHandle, numFeatures, numLoaded);}
 	void FireGridOpened(LONG LayerHandle, LPCTSTR gridFilename, LONG bandIndex, VARIANT_BOOL isUsingProxy)
 		{ FireEvent(eventidGridOpened, EVENT_PARAM(VTS_I4 VTS_BSTR VTS_I4 VTS_BOOL), LayerHandle, gridFilename, bandIndex, isUsingProxy);	}
+	void FireOnDrawBackBuffer2(LONG height, LONG Width, LONG Stride, LONG pixelFormat, LONG scan0)
+		{ FireEvent(eventidOnDrawBackBuffer2, EVENT_PARAM(VTS_I4 VTS_I4 VTS_I4 VTS_I4 VTS_I4), height, Width, Stride, pixelFormat, scan0); }
 
 	//}}AFX_EVENT
 	DECLARE_EVENT_MAP()
@@ -738,6 +740,8 @@ public:
 	HCURSOR _cursorMove;
 
 	HCURSOR _udCursor;
+
+	tkCustomDrawingFlags _customDrawingFlags;		// tkCustomDrawing
 	
 	// --------------------------------------------
 	//	  Layers
@@ -1161,6 +1165,8 @@ private:
 	void StartMouseTracking();
 	bool HandleOnCopyrighMouseDown(CPoint point);
 	void UndoMeasuringPoint();
+	void FireOnDrawbackBufferCore(Gdiplus::Graphics* g, Gdiplus::Bitmap* bitmap);
+	void DumpBuffers();
 #pragma endregion
 
 public:
@@ -1191,6 +1197,8 @@ public:
 	virtual void _FireBackgroundLoadingFinished(long taskId, long layerHandle, long numFeatures, long numLoaded) 
 	{		FireBackgroundLoadingFinished(taskId, layerHandle, numFeatures, numLoaded);	};
 	
+
+
 };
 
 //{{AFX_INSERT_LOCATION}}
