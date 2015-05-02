@@ -1160,6 +1160,7 @@ private:
 	bool HandleOnCopyrightMouseMove(CPoint point);
 	void StartMouseTracking();
 	bool HandleOnCopyrighMouseDown(CPoint point);
+	void UndoMeasuringPoint();
 #pragma endregion
 
 public:
@@ -1189,6 +1190,7 @@ public:
 	virtual void _FireBackgroundLoadingStarted(long taskId, long layerHandle) { FireBackgroundLoadingStarted(taskId, layerHandle); };
 	virtual void _FireBackgroundLoadingFinished(long taskId, long layerHandle, long numFeatures, long numLoaded) 
 	{		FireBackgroundLoadingFinished(taskId, layerHandle, numFeatures, numLoaded);	};
+	
 };
 
 //{{AFX_INSERT_LOCATION}}

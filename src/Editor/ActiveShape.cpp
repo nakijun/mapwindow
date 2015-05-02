@@ -236,7 +236,7 @@ void ActiveShape::DrawLines(Gdiplus::Graphics* g, int size, Gdiplus::PointF* dat
 	}
 	else
 	{
-		_linePen.SetDashStyle(Gdiplus::DashStyleSolid);
+		_linePen.SetDashStyle((Gdiplus::DashStyle)LineStyle);
 	}
 
 	if (!_drawLabelsOnly && !multiPoint) 
@@ -328,73 +328,37 @@ void ActiveShape::DrawLines(Gdiplus::Graphics* g, int size, Gdiplus::PointF* dat
 // ****************************************************************
 void ActiveShape::DrawPolygonArea(Gdiplus::Graphics* g, Gdiplus::PointF* data, int size, bool dynamicPoly)
 {
+	if (!GetShowArea()) return;
+
 	IPoint* pnt = GetPolygonCenter(data, size);
 	if (pnt)
 	{
 		double projX, projY;
 		PixelToProj(_mousePoint.x, _mousePoint.y, projX, projY);
 		double area = GetArea(dynamicPoly, projX, projY);
-		DrawMeasuringPolyArea(g, pnt, area);
+		DrawPolygonArea(g, pnt, area);
 		pnt->Release();
 	}
 }
 
 // ****************************************************************
-//		DrawMeasuringPolyArea()
+//		DrawPolygonArea()
 // ****************************************************************
-void ActiveShape::DrawMeasuringPolyArea(Gdiplus::Graphics* g, IPoint* pnt, double area)
+void ActiveShape::DrawPolygonArea(Gdiplus::Graphics* g, IPoint* pnt, double area)
 {
-	if (!ShowArea) return;
-
 	double xOrig, yOrig;
 	pnt->get_X(&xOrig);
 	pnt->get_Y(&yOrig);
 
-	CStringW str;
+	CStringW sArea = Utility::FormatArea(area, !HasProjection(), AreaDisplayMode, AreaPrecision);
 
-	if (HasProjection())
-	{
-		// draw the label
-		switch(AreaDisplayMode)
-		{
-			case admMetric:
-				{
-					if (area < 1000.0)
-					{
-						str.Format(L"%.1f %s", area, m_globalSettings.GetLocalizedString(lsSquareMeters));
-					}
-					else if(area < 10000000.0)
-					{
-						area /= 10000.0;
-						str.Format(L"%.2f %s", area, m_globalSettings.GetLocalizedString(lsHectars));
-					}
-					else
-					{
-						area /= 1000000.0;
-						str.Format(L"%.2f %s", area, m_globalSettings.GetLocalizedString(lsSquareKilometers));
-					}
-				}
-				break;
-			case admHectars:
-				{
-					area /= 10000.0;
-					str.Format(L"%.2f %s", area, m_globalSettings.GetLocalizedString(lsHectars));
-				}
-				break;
-		}
-	}
-	else
-	{
-		str.Format(L"%.2f %s", abs(area), m_globalSettings.GetLocalizedString(tkLocalizedStrings::lsSquareMapUnits));
-	}
-	
 	Gdiplus::PointF origin((Gdiplus::REAL)xOrig, (Gdiplus::REAL)yOrig);
 
 	Gdiplus::RectF box;
-	g->MeasureString(str, str.GetLength(), _fontArea, origin, &_format, &box);
+	g->MeasureString(sArea, sArea.GetLength(), _fontArea, origin, &_format, &box);
 
 	g->FillRectangle(&_whiteBrush, box);
-	g->DrawString(str, str.GetLength(), _fontArea, origin, &_format, &_textBrush);
+	g->DrawString(sArea, sArea.GetLength(), _fontArea, origin, &_format, &_textBrush);
 }
 
 // ****************************************************************************/
@@ -470,7 +434,7 @@ CStringW ActiveShape::FormatLength(double length, CStringW format, bool unknownU
 				units = umCentimeters;
 			}
 			break;
-		case ldmMilesAndFeet:
+		case ldmAmerican:
 			Utility::ConvertDistance(units, umMiles, length);
 			units = umMiles;
 

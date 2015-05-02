@@ -68,6 +68,7 @@ namespace MWLite.GUI.Forms
             Map.Identifier.HotTracking = true;
             Map.ShapeEditor.HighlightVertices = tkLayerSelection.lsNoLayer;
             Map.ShapeEditor.SnapBehavior = tkLayerSelection.lsNoLayer;
+            axMap1.Measuring.UndoButton = tkUndoShortcut.usCtrlZ;
         }
 
         private void RegisterEventHandlers()

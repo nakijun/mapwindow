@@ -186,6 +186,7 @@ typedef
 enum tkUndoShortcut {
 	usNone = 0,
 	usCtrlZ = 1,
+	usRightMouseButton = 2,
 }tkUndoShortcut;
 
 /************************** tkDeleteTarget Enumeration **********************/
@@ -209,7 +210,7 @@ typedef
 ]
 enum tkLengthDisplayMode {
 	ldmMetric = 1,
-    ldmMilesAndFeet = 2,
+    ldmAmerican = 2,
 }tkLengthDisplayMode;
 
 /************************** tkShapeEditorState Enumeration **********************/
@@ -433,8 +434,7 @@ enum tkAreaDisplayMode
 {
 	 admMetric = 0,
      admHectars = 1,
-	 admAcres = 2,
-	 admAcresAndFeet = 2,
+	 admAmerican = 2,
 } tkAreaDisplayMode;
 
 /************************** tkCustomState Enumeration **********************/
@@ -2096,6 +2096,9 @@ enum tkScalebarUnits
 		lsEast = 17,
 		lsSouth = 18,
 		lsWest = 19,
+		lsAcres = 20,
+		lsSquareFeet = 21,
+		lsSquareMiles = 22,
 	} tkLocalizedStrings;
 
 	/************************* tkProjectionParameter **************************/
@@ -3295,6 +3298,20 @@ enum tkScalebarUnits
 		[propget, id(50)] HRESULT HasChanges([out, retval] VARIANT_BOOL* pVal);
 		[propget, id(51)] HRESULT IsUsingEllipsoid([out, retval] VARIANT_BOOL* pVal);
 		[propget, id(52)] HRESULT Length([out, retval] DOUBLE* pVal);
+		[propget, id(53)] HRESULT ShowArea([out, retval] VARIANT_BOOL* pVal);
+		[propput, id(53)] HRESULT ShowArea([in] VARIANT_BOOL newVal);
+		[propget, id(54)] HRESULT AreaPrecision([out, retval] LONG* pVal);
+		[propput, id(54)] HRESULT AreaPrecision([in] LONG newVal);
+		[propget, id(55)] HRESULT LengthPrecision([out, retval] LONG* pVal);
+		[propput, id(55)] HRESULT LengthPrecision([in] LONG newVal);
+		[propget, id(56)] HRESULT AngleFormat([out, retval] tkAngleFormat* pVal);
+		[propput, id(56)] HRESULT AngleFormat([in] tkAngleFormat newVal);
+		[propget, id(57)] HRESULT AnglePrecision([out, retval] LONG* pVal);
+		[propput, id(57)] HRESULT AnglePrecision([in] LONG newVal);
+		[propget, id(58)] HRESULT ShowBearing([out, retval] VARIANT_BOOL* pVal);
+		[propput, id(58)] HRESULT ShowBearing([in] VARIANT_BOOL newVal);
+		[propget, id(59)] HRESULT ShowLength([out, retval] VARIANT_BOOL* pVal);
+		[propput, id(59)] HRESULT ShowLength([in] VARIANT_BOOL newVal);
 	};
 
 	
@@ -5586,16 +5603,12 @@ interface IMeasuring : IDispatch{
 	[propput, id(31)] HRESULT LineWidth([in] FLOAT newVal);
 	[propget, id(32)] HRESULT LineStyle([out, retval] tkDashStyle* pVal);
 	[propput, id(32)] HRESULT LineStyle([in] tkDashStyle newVal);
-	[propget, id(33)] HRESULT PointColor([out, retval] OLE_COLOR* pVal);
-	[propput, id(33)] HRESULT PointColor([in] OLE_COLOR newVal);
-	[propget, id(34)] HRESULT PointFillVisible([out, retval] VARIANT_BOOL* pVal);
-	[propput, id(34)] HRESULT PointFillVisible([in] VARIANT_BOOL newVal);
-	[propget, id(35)] HRESULT PointType([out, retval] tkVertexType* pVal);
-	[propput, id(35)] HRESULT PointType([in] tkVertexType newVal);
 	[propget, id(36)] HRESULT PointLabelsVisible([out, retval] VARIANT_BOOL* pVal);
 	[propput, id(36)] HRESULT PointLabelsVisible([in] VARIANT_BOOL newVal);
 	[propget, id(37)] HRESULT ShowTotalLength([out, retval] VARIANT_BOOL* pVal);
 	[propput, id(37)] HRESULT ShowTotalLength([in] VARIANT_BOOL newVal);
+	[propget, id(38)] HRESULT UndoButton([out, retval] tkUndoShortcut* pVal);
+	[propput, id(38)] HRESULT UndoButton([in] tkUndoShortcut newVal);
 };
 
 [

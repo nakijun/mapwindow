@@ -173,6 +173,9 @@ struct GlobalSettingsInfo
 		shortUnitStrings[lsEast] = L"E";
 		shortUnitStrings[lsSouth] = L"S";
 		shortUnitStrings[lsWest] = L"W";
+		shortUnitStrings[lsSquareFeet] = L"sq.ft";
+		shortUnitStrings[lsAcres] = L"ac";
+		shortUnitStrings[lsSquareMiles] = L"sq.mi";
 	}
 	
 	// *******************************************************

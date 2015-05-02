@@ -252,7 +252,7 @@ STDMETHODIMP CMeasuring::get_AreaUnits(tkAreaDisplayMode* retVal)
 STDMETHODIMP CMeasuring::put_AreaUnits(tkAreaDisplayMode newVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	_measuring->AreaDisplayMode;
+	_measuring->AreaDisplayMode = newVal;
 	return S_OK;
 }
 
@@ -488,57 +488,6 @@ STDMETHODIMP CMeasuring::put_LineStyle(tkDashStyle newVal)
 }
 
 // *******************************************************
-//		PointColor()
-// *******************************************************
-STDMETHODIMP CMeasuring::get_PointColor(OLE_COLOR* pVal)
-{
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	*pVal = _measuring->PointColor;
-	return S_OK;
-}
-
-STDMETHODIMP CMeasuring::put_PointColor(OLE_COLOR newVal)
-{
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	_measuring->PointColor = newVal;
-	return S_OK;
-}
-
-// *******************************************************
-//		PointFillVisible()
-// *******************************************************
-STDMETHODIMP CMeasuring::get_PointFillVisible(VARIANT_BOOL* pVal)
-{
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	*pVal = _measuring->PointFillVisible ? VARIANT_TRUE: VARIANT_FALSE;
-	return S_OK;
-}
-
-STDMETHODIMP CMeasuring::put_PointFillVisible(VARIANT_BOOL newVal)
-{
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	_measuring->PointFillVisible = newVal ? true : false;
-	return S_OK;
-}
-
-// *******************************************************
-//		VerticesType()
-// *******************************************************
-STDMETHODIMP CMeasuring::get_PointType(tkVertexType* pVal)
-{
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	*pVal = _measuring->PointType;
-	return S_OK;
-}
-
-STDMETHODIMP CMeasuring::put_PointType(tkVertexType newVal)
-{
-	AFX_MANAGE_STATE(AfxGetStaticModuleState());
-	_measuring->PointType = newVal;
-	return S_OK;
-}
-
-// *******************************************************
 //		PointLabelsVisible()
 // *******************************************************
 STDMETHODIMP CMeasuring::get_PointLabelsVisible(VARIANT_BOOL* pVal)
@@ -569,5 +518,22 @@ STDMETHODIMP CMeasuring::put_ShowTotalLength(VARIANT_BOOL newVal)
 {
 	AFX_MANAGE_STATE(AfxGetStaticModuleState());
 	_measuring->ShowTotalLength = newVal ? true : false;
+	return S_OK;
+}
+
+// *******************************************************
+//		UndoButton()
+// *******************************************************
+STDMETHODIMP CMeasuring::get_UndoButton(tkUndoShortcut* pVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	*pVal = _undoButton;
+	return S_OK;
+}
+
+STDMETHODIMP CMeasuring::put_UndoButton(tkUndoShortcut newVal)
+{
+	AFX_MANAGE_STATE(AfxGetStaticModuleState());
+	_undoButton = newVal;
 	return S_OK;
 }

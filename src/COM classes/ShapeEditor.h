@@ -130,6 +130,16 @@ public:
 	STDMETHOD(get_HasChanges)(VARIANT_BOOL* pVal);
 	STDMETHOD(get_IsUsingEllipsoid)(VARIANT_BOOL* pVal);
 	STDMETHOD(get_Length)(DOUBLE* pVal);
+	STDMETHOD(get_ShowArea)(VARIANT_BOOL* pVal);
+	STDMETHOD(put_ShowArea)(VARIANT_BOOL newVal);
+	STDMETHOD(get_AreaPrecision)(LONG* pVal);
+	STDMETHOD(put_AreaPrecision)(LONG newVal);
+	STDMETHOD(get_LengthPrecision)(LONG* pVal);
+	STDMETHOD(put_LengthPrecision)(LONG newVal);
+	STDMETHOD(get_AngleFormat)(tkAngleFormat* pVal);
+	STDMETHOD(put_AngleFormat)(tkAngleFormat newVal);
+	STDMETHOD(get_AnglePrecision)(LONG* pVal);
+	STDMETHOD(put_AnglePrecision)(LONG newVal);
 
 private:
 	BSTR _key;
@@ -227,5 +237,9 @@ public:
 	bool HasSelectedPart() { return _activeShape->HasSelectedPart(); }
 	int SelectPart(double xProj, double yProj) { return _activeShape->SelectPart(xProj, yProj); }
 	int GetClosestVertex(double projX, double projY, double tolerance) { return _activeShape->GetClosestVertex(projX, projY, tolerance); }
+	STDMETHOD(get_ShowBearing)(VARIANT_BOOL* pVal);
+	STDMETHOD(put_ShowBearing)(VARIANT_BOOL newVal);
+	STDMETHOD(get_ShowLength)(VARIANT_BOOL* pVal);
+	STDMETHOD(put_ShowLength)(VARIANT_BOOL newVal);
 };
 OBJECT_ENTRY_AUTO(__uuidof(ShapeEditor), CShapeEditor)

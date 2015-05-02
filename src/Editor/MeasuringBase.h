@@ -45,4 +45,5 @@ public:
 	void ClearIfStopped();
 	void Clear();
 	bool GetPartStartAndEnd(int partIndex, MixedShapePart whichPoints, int& startIndex, int& endIndex);
+	bool GetShowArea() { return true; }		// it's determined by measuring mode
 };

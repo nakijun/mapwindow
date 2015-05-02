@@ -28,6 +28,7 @@ namespace Utility
 	double atof_custom(CString s);
 	double FloatRound(double doValue, int nPrecision);
 	bool FloatsEqual(const float &a, const float &b);
+	CStringW FormatArea(double area, bool unknownUnits, tkAreaDisplayMode units, int precision);
 
 	// files, !!! all parameters should be CStringW; we use Unicode !!!
 	bool FileExistsW(CStringW filename);

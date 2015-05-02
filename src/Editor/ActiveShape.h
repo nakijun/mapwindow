@@ -13,7 +13,7 @@ public:
 	{
 		RELATIVE_HORIZONTAL_PADDING = 1.3;
 		_font = Utility::GetGdiPlusFont("Times New Roman", 9);
-		_fontArea = Utility::GetGdiPlusFont("Arial", 12);
+		_fontArea = Utility::GetGdiPlusFont("Times New Roman", 11);
 		_format.SetAlignment(Gdiplus::StringAlignmentCenter);
 		_format.SetLineAlignment(Gdiplus::StringAlignmentCenter);
 
@@ -27,27 +27,25 @@ public:
 		_highlightedPart = -1;
 		_inputMode = simMeasuring;
 
-		OverlayTool = false;
-		FillTransparency = 100;
+		AnglePrecision = 1;
+		AngleFormat = afDegrees;
+		AreaDisplayMode = admMetric;
+		AreaPrecision = 1;
+		BearingType = btAbsolute;
 		FillColor = RGB(255, 165, 0);
+		FillTransparency = 100;
 		LineColor = RGB(255, 127, 0);
-		PointColor = RGB(0, 0, 255);
 		LineWidth = 2.0f;
 		LengthUnits = ldmMetric;
-		AreaDisplayMode = admMetric;
-		BearingType = btAbsolute;
-		ShowBearing = false;
-		ShowLength = true;
 		LengthPrecision = 1;
-		AreaPrecision = 1;
-		AnglePrecision = 0;
 		LineStyle = dsSolid;
-		PointFillVisible = true;
-		PointType = vtSquare;
-		ShowTotalLength = true;
+		OverlayTool = false;
 		PointsVisible = true;
 		PointLabelsVisible = true;
-		AngleFormat = afDegrees;
+		ShowBearing = false;
+		ShowLength = true;
+		ShowTotalLength = true;
+		ShowArea = true;
 	};
 
 	virtual ~ActiveShape(void) {
@@ -99,7 +97,6 @@ public:
 	bool ShowArea;
 	bool ShowLength;
 	bool OverlayTool;
-	bool PointFillVisible;
 	bool PointLabelsVisible;
 	bool PointsVisible;
 	bool ShowTotalLength;
@@ -113,10 +110,8 @@ public:
 
 	OLE_COLOR FillColor;
 	OLE_COLOR LineColor;
-	OLE_COLOR PointColor;
 	BYTE FillTransparency;
 	tkDashStyle LineStyle;
-	tkVertexType PointType;
 	float LineWidth;
 
 protected:
@@ -130,7 +125,8 @@ protected:
 	virtual bool SnapToPreviousVertex(int& vertexIndex, double screenX, double screenY) = 0;
 	virtual bool DrawAccumalatedLength() = 0;
 	virtual bool HasClosedPolygon() = 0;
-	
+	virtual bool GetShowArea() = 0;
+
 	CStringW FormatBearing(int segmentIndex, double azimuth);
 	bool VerticesAreVisible();
 	bool PointLabelsAreVisible();
@@ -163,8 +159,8 @@ public:
 	void DrawData(Gdiplus::Graphics* g, bool dynamicBuffer, DraggingOperation offsetType, int screenOffsetX = 0, int screenOffsetY = 0);
 	void DrawSegmentInfo(Gdiplus::Graphics* g, double xScr, double yScr, double xScr2, double yScr2, 
 		double length, double totalLength, int segmentIndex);
-	void DrawMeasuringPolyArea(Gdiplus::Graphics* g, IPoint* pnt, double area);
 	void DrawPolygonArea(Gdiplus::Graphics* g, Gdiplus::PointF* data, int size, bool dynamicPoly);
+	void DrawPolygonArea(Gdiplus::Graphics* g, IPoint* pnt, double area);
 	void DrawLines(Gdiplus::Graphics* g, int size, Gdiplus::PointF* data, bool dynamicBuffer, int partIndex, CCollisionList& collisionList);
 	void DrawRelativeBearing(Gdiplus::Graphics* g, int segmentIndex, double xScr, double yScr, Gdiplus::RectF r2, CStringW sBearing);
 	void PrepareSegmentLength(Gdiplus::Graphics* g, double length, double totalLength, double screenLength, int segmentIndex, CStringW& sLength, Gdiplus::RectF& rect);

@@ -41,6 +41,7 @@ public:
 		_lastErrorCode = tkNO_ERROR;
 		_globalCallback = NULL;
 		_key = SysAllocString(L"");
+		_undoButton = usRightMouseButton;
 	}
 
 	~CMeasuring() {
@@ -119,25 +120,23 @@ public:
 	STDMETHOD(put_LineWidth)(FLOAT newVal);
 	STDMETHOD(get_LineStyle)(tkDashStyle* pVal);
 	STDMETHOD(put_LineStyle)(tkDashStyle newVal);
-	STDMETHOD(get_PointColor)(OLE_COLOR* pVal);
-	STDMETHOD(put_PointColor)(OLE_COLOR newVal);
-	STDMETHOD(get_PointFillVisible)(VARIANT_BOOL* pVal);
-	STDMETHOD(put_PointFillVisible)(VARIANT_BOOL newVal);
-	STDMETHOD(get_PointType)(tkVertexType* pVal);
-	STDMETHOD(put_PointType)(tkVertexType newVal);
 	STDMETHOD(get_PointLabelsVisible)(VARIANT_BOOL* pVal);
 	STDMETHOD(put_PointLabelsVisible)(VARIANT_BOOL newVal);
 	STDMETHOD(get_ShowTotalLength)(VARIANT_BOOL* pVal);
 	STDMETHOD(put_ShowTotalLength)(VARIANT_BOOL newVal);
+	STDMETHOD(get_UndoButton)(tkUndoShortcut* pVal);
+	STDMETHOD(put_UndoButton)(tkUndoShortcut newVal);
 
 private:
 	long _lastErrorCode;
 	ICallback * _globalCallback;
 	BSTR _key;
 	MeasuringBase* _measuring;
+	tkUndoShortcut _undoButton;
 
 public:
 	MeasuringBase* GetBase() { return _measuring; }
+	
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(Measuring), CMeasuring)

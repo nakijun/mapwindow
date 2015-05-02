@@ -595,6 +595,7 @@ namespace Utility
 #pragma endregion
 	
 #pragma region Unit conversion
+
 	// ****************************************************************
 	//		GetLocalizedUnitsText()
 	// ****************************************************************
@@ -690,9 +691,101 @@ namespace Utility
 			return false;
 		}
 	}
+
 #pragma endregion
 
 #pragma region Numbers
+
+	double SquareMetersPerSquareMile()
+	{
+		return 2589975.2356;
+	}
+
+	double SquareMetersPerAcre()
+	{
+		return 4046.8564224;		// according to International yard and pound agreement (1959)
+	}
+
+	double SquareMetersPerSquareFoot()
+	{
+		return 0.09290304;
+	}
+
+	// ****************************************************************
+	//		FormatArea()
+	// ****************************************************************
+	CStringW Utility::FormatArea(double area, bool unknownUnits, tkAreaDisplayMode units, int precision)
+	{
+		CStringW str;
+		area = abs(area);
+
+		CStringW format = GetUnitsFormat(precision);
+
+		if (!unknownUnits)
+		{
+			tkLocalizedStrings localizedUnits;
+
+			switch (units)
+			{
+				case admMetric:
+				{
+					if (area < 1000.0)
+					{
+						localizedUnits = lsSquareMeters;
+					}
+					else if (area < 10000000.0)
+					{
+						area /= 10000.0;
+						localizedUnits = lsHectars;
+					}
+					else
+					{
+						area /= 1000000.0;
+						localizedUnits = lsSquareKilometers;
+					}
+					break;
+				}
+				case admHectars:
+				{
+					area /= 10000.0;
+					localizedUnits = lsHectars;
+					break;
+				}
+				case admAmerican:
+				{
+					double area2 = area / SquareMetersPerSquareMile();
+					localizedUnits = lsSquareMiles;
+
+					if (area2 < 100.0)
+					{
+						area2 = area / SquareMetersPerAcre();
+						localizedUnits = lsAcres;
+
+						if (area2 < 1.0)
+						{
+							area2 = area / SquareMetersPerSquareFoot();
+							localizedUnits = lsSquareFeet;
+						}
+					}
+
+					area = area2;
+
+					break;
+				}
+				default:
+					return str;
+			}
+
+			str.Format(format, area, m_globalSettings.GetLocalizedString(localizedUnits));
+		}
+		else
+		{
+			str.Format(format, area, m_globalSettings.GetLocalizedString(tkLocalizedStrings::lsSquareMapUnits));
+		}
+
+		return str;
+	}
+
 	// *********************************************************
 	//		GetNumberFormat()
 	// *********************************************************
