@@ -462,7 +462,7 @@ double GetAzimuth(MeasurePoint* pnt1, MeasurePoint* pnt2)
 // ****************************************************************************/
 //   GetBearing()
 // ****************************************************************************/
-double GeoShape::FormatBearing(int vertexIndex, bool clockwise)
+double GeoShape::GetBearing(int vertexIndex, bool clockwise)
 {
 	double az1 = GetAzimuth(_points[vertexIndex - 1], _points[vertexIndex]);
 	double az2 = GetAzimuth(_points[vertexIndex], _points[vertexIndex + 1]);
@@ -477,7 +477,7 @@ double GeoShape::FormatBearing(int vertexIndex, bool clockwise)
 double GeoShape::GetBearingLabelAngle(int vertexIndex, bool clockwise)
 {
 	double az;
-	double bearing = FormatBearing(vertexIndex, clockwise);
+	double bearing = GetBearing(vertexIndex, clockwise);
 	if (clockwise)
 	{
 		az = GetAzimuth(_points[vertexIndex], _points[vertexIndex + 1]);

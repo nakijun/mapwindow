@@ -127,12 +127,13 @@ protected:
 	virtual bool HasClosedPolygon() = 0;
 	virtual bool GetShowArea() = 0;
 
-	CStringW FormatBearing(int segmentIndex, double azimuth);
 	bool VerticesAreVisible();
 	bool PointLabelsAreVisible();
 	bool PartIsSelected(int partIndex);
 	double GetAzimuth(MeasurePoint* pnt1, MeasurePoint* pnt2);
+	double GetInnerAngle(int vertexIndex, bool clockwise);
 	double GetRelativeBearing(int vertexIndex, bool clockwise);
+	bool IsRelativeBearing();
 public:	
 	
 	void SetMapCallback(IMapViewCallback* mapView, ShapeInputMode inputMode);
@@ -167,4 +168,5 @@ public:
 	CStringW FormatLength(double length, CStringW format, bool unknownUnits);
 	void PrepareSegmentBearing(Gdiplus::Graphics* g, int segmentIndex, double dx, double dy, CStringW& sBearing, Gdiplus::RectF& rect);
 	void DrawSegmentLabel(Gdiplus::Graphics* g, CStringW text, Gdiplus::RectF rect, double screenLength, bool aboveLine);
+	
 };

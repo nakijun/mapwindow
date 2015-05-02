@@ -2567,14 +2567,22 @@ namespace MapWinGIS
         btReducedNED = 2,
 
         /// <summary>
-        /// Relative bearing, represents clockwise angle between direction of the previous line and the next line.
+        /// Relative bearing, represents clockwise angle between direction of the previous line and the next line. Range of values [-180, 180] degrees. 
+        /// If the next line turns to the left the value is negative, to the right - positive.
         /// </summary>
-        btClockwise = 3,
+        btRelative = 3,
 
         /// <summary>
-        /// Relative bearing, represents counter-clockwise angle between direction of the previous line and the next line.
+        /// Left inner angle formed by the previous line and next line. Range of values [0, 360] degrees. If the next line has the same direction
+        /// as the previous one, the value is 180°.
         /// </summary>
-        btCounterClockwise = 4,
+        btLeftAngle = 4,
+
+        /// <summary>
+        /// Right inner angle formed by the previous line and the next line. Range of values [0, 360] degrees. If the next line has the same direction
+        /// as the previous one, the value is 180°.
+        /// </summary>
+        btRightAngle = 4,
     }
 
     /// <summary>

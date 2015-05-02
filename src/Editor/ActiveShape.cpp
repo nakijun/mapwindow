@@ -287,7 +287,7 @@ void ActiveShape::DrawLines(Gdiplus::Graphics* g, int size, Gdiplus::PointF* dat
 
 			if (i > 0 && i < size - 1)
 			{
-				double angle = GetBearingLabelAngle(realIndex, BearingType == btCounterClockwise);
+				double angle = GetBearingLabelAngle(realIndex, BearingType == btLeftAngle);
 
 				double dx = sin(angle / 180.0 * pi_) * 15;
 				double dy = -cos(angle / 180.0 * pi_) * 15;
@@ -372,9 +372,9 @@ double ActiveShape::GetAzimuth(MeasurePoint* pnt1, MeasurePoint* pnt2)
 }
 
 // *****************************************************************
-//   GetRelativeBearing()
+//   GetInnerAngle()
 // *****************************************************************
-double ActiveShape::GetRelativeBearing(int vertexIndex, bool clockwise)
+double ActiveShape::GetInnerAngle(int vertexIndex, bool clockwise)
 {
 	double az1 = GetAzimuth(_points[vertexIndex - 1], _points[vertexIndex]);
 	double az2 = GetAzimuth(_points[vertexIndex], _points[vertexIndex + 1]);
@@ -384,24 +384,15 @@ double ActiveShape::GetRelativeBearing(int vertexIndex, bool clockwise)
 }
 
 // *****************************************************************
-//   GetBearing()
+//   GetRelativeBearing()
 // *****************************************************************
-CStringW ActiveShape::FormatBearing(int segmentIndex, double azimuth)
+double ActiveShape::GetRelativeBearing(int vertexIndex, bool clockwise)
 {
-	double angle = azimuth;
-	
-	if (BearingType == btClockwise || BearingType == btCounterClockwise)
-	{
-		if (segmentIndex > 0 && segmentIndex < (int)_points.size() - 1)
-		{
-			angle = GetRelativeBearing(segmentIndex, BearingType == btClockwise);
-		}
-		else {
-			return L"";
-		}
-	}
-
-	return AngleHelper::FormatBearing(azimuth, BearingType, AngleFormat, AnglePrecision);
+	double az1 = GetAzimuth(_points[vertexIndex - 1], _points[vertexIndex]);
+	double az2 = GetAzimuth(_points[vertexIndex], _points[vertexIndex + 1]);
+	if (az2 - 180 > az1) az1 = az1 + 360;
+	if (az1 - 180 > az2) az2 = az2 + 360;
+	return clockwise ? (az2 - az1) : az1 - az2;
 }
 
 // ***************************************************************
@@ -480,12 +471,41 @@ void ActiveShape::PrepareSegmentLength(Gdiplus::Graphics* g, double length, doub
 }
 
 // ***************************************************************
+//		IsRelativeBearing()
+// ***************************************************************
+bool ActiveShape::IsRelativeBearing()
+{
+	return BearingType == btRelative || BearingType == btLeftAngle || BearingType == btRightAngle;
+}
+
+// ***************************************************************
 //		PrepareSegmentBearing()
 // ***************************************************************
 void ActiveShape::PrepareSegmentBearing(Gdiplus::Graphics* g, int segmentIndex, double dx, double dy, CStringW& sBearing, Gdiplus::RectF& rect)
 {
 	double az = 360.0 - GeometryHelper::GetPointAngleDeg(-dx, -dy);
-	sBearing = FormatBearing(segmentIndex, az);
+
+	if (IsRelativeBearing())
+	{
+		if (segmentIndex > 0 && segmentIndex < (int)_points.size() - 1)
+		{
+			if (BearingType == btRelative)
+			{
+				az = GetRelativeBearing(segmentIndex, true);		// relative bearing is always clockwise
+			}
+			else
+			{
+				az = GetInnerAngle(segmentIndex, BearingType == btRightAngle);
+			}
+		}
+		else {
+			sBearing = L"";
+			return;
+		}
+	}
+
+	sBearing = AngleHelper::FormatBearing(az, BearingType, AngleFormat, AnglePrecision);
+	
 	g->MeasureString(sBearing, sBearing.GetLength(), _font, Gdiplus::PointF(0.0f, 0.0f), &_format, &rect);
 }
 
@@ -516,7 +536,7 @@ void ActiveShape::DrawSegmentInfo(Gdiplus::Graphics* g, double xScr, double yScr
 	double dx = xScr2 - xScr;
 	double dy = yScr2 - yScr;
 	double screenLength = sqrt(dx*dx + dy*dy);
-	bool relativeBearing = BearingType == btClockwise || BearingType == btCounterClockwise;
+	bool relativeBearing = IsRelativeBearing();
 
 	// rotation angle for labels
 	double angle = GeometryHelper::GetPointAngleDeg(dx, dy);
@@ -583,7 +603,7 @@ void ActiveShape::DrawRelativeBearing(Gdiplus::Graphics* g, int segmentIndex, do
 		return;
 	}
 
-	double angle = GetBearingLabelAngle(segmentIndex, BearingType == btClockwise) - 90.0;
+	double angle = GetBearingLabelAngle(segmentIndex, BearingType != btLeftAngle) - 90.0;
 
 	bool upsideDown = false;
 

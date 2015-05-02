@@ -68,8 +68,9 @@ enum tkBearingType {
 	btAbsolute = 0,
 	btReducedNDE = 1,
 	btReducedNED = 2,
-	btClockwise = 3,
-    btCounterClockwise = 4,
+	btRelative = 3,
+	btLeftAngle = 4,
+    btRightAngle = 5,
 }tkBearingType;
 
 /************************** tkProxyAuthentication Enumeration **********************/

@@ -71,19 +71,14 @@ CStringW AngleHelper::FormatAngle(double angle, tkAngleFormat angleType, int pre
 // ***************************************************************
 CStringW AngleHelper::FormatBearing(double angle, tkBearingType bearingType, tkAngleFormat angleFormat, int precision)
 {
-	CStringW s;
 	switch (bearingType)
 	{
-		case btAbsolute:
-		case btClockwise:
-		case btCounterClockwise:
-			return FormatAngle(angle, angleFormat, precision, false);
 		case btReducedNDE:
 		case btReducedNED:
 			return GetReducedBearing(angle, bearingType, angleFormat, precision);
+		default:
+			return FormatAngle(angle, angleFormat, precision, false, bearingType == btRelative);
 	}
-
-	return L"";
 }
 
 /****************************************************************************/

@@ -43,7 +43,7 @@ protected:
 	void GetExtents(Extent& extent);
 	double GetEuclidianDistance();
 	double GetGeodesicDistance();
-	double FormatBearing(int vertexIndex, bool clockwise);
+	double GetBearing(int vertexIndex, bool clockwise);
 	double GetBearingLabelAngle(int vertexIndex, bool clockwise);
 	double GetDynamicLineDistance();
 	int FindSegmentWithPoint(double xProj, double yProj);
