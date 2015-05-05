@@ -3,7 +3,7 @@ enum {		//{{AFX_DISP_ID(CMapView)
 	// NOTE: ClassWizard will add and remove enumeration elements here
 	//    DO NOT EDIT what you see in these blocks of generated code !
 	// **ClassWizard is a thing of the past... feel free to edit this code.
-	dispidCustomDrawingFlags = 250L,
+	dispidCustomDrawingFlags = 252L,
 	dispidGeodesicArea = 249L,
 	dispidGeodesicLength = 248L,
 	dispidGeodesicDistance = 247L,
@@ -278,6 +278,6 @@ enum {		//{{AFX_DISP_ID(CMapView)
 	eventidBackgroundLoadingStarted = 32L,
 	eventidBackgroundLoadingFinished = 33L,
 	eventidGridOpened = 34L,
-	eventidOnDrawBackBuffer2 = 35L,
+	eventidOnDrawBackBuffer2 = 36L,
 	//}}AFX_DISP_ID
 };

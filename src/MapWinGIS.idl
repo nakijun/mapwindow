@@ -223,8 +223,8 @@ typedef
 	helpstring("tkLengthDisplayMode"),
 ]
 enum tkLengthDisplayMode {
-	ldmMetric = 1,
-    ldmAmerican = 2,
+	ldmMetric = 0,
+    ldmAmerican = 1,
 }tkLengthDisplayMode;
 
 /************************** tkShapeEditorState Enumeration **********************/
@@ -5934,7 +5934,7 @@ library MapWinGIS
 			[id(243), readonly] IIdentifier* Identifier;
 			[id(235), readonly] IShapeEditor* ShapeEditor;
 			[id(196), readonly] IMeasuring* Measuring;
-			[id(250)] tkCustomDrawingFlags CustomDrawingFlags;
+			[id(252)] tkCustomDrawingFlags CustomDrawingFlags;
 
 #ifdef OLD_API
 			[id(14)] VARIANT_BOOL DoubleBuffer;
@@ -6390,7 +6390,7 @@ library MapWinGIS
 			[id(32)] void BackgroundLoadingStarted(LONG TaskId, LONG LayerHandle);
 			[id(33)] void BackgroundLoadingFinished(LONG TaskId, LONG LayerHandle, LONG NumFeatures, LONG NumLoaded);
 			[id(34)] void GridOpened(LONG LayerHandle, BSTR gridFilename, LONG bandIndex, VARIANT_BOOL isUsingProxy);
-			[id(35)] void OnDrawBackBuffer2(LONG height, LONG Width, LONG Stride, LONG pixelFormat, LONG scan0);
+			[id(36)] void OnDrawBackBuffer2(LONG height, LONG Width, LONG Stride, LONG pixelFormat, LONG scan0);
 		//}}AFX_ODL_EVENT
 	};
 
