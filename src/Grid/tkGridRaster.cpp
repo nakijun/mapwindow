@@ -511,9 +511,19 @@ bool tkGridRaster::CreateNew(CStringW filename, GridFileType newFileType, double
 	catch(...)
 	{}
 
+	if (newFileType == GeoTiff)
+	{
+		CString s = m_globalSettings.GetTiffCompression();
+		papszOptions = CSLAddString(papszOptions, "COMPRESS=" + s);
+	}
+
 	m_globalSettings.SetGdalUtf8(true);
 	rasterDataset = poDriver->Create( Utility::ConvertToUtf8(filename), ncols, nrows, 1, genericType, papszOptions );
 	m_globalSettings.SetGdalUtf8(false);
+
+	if (papszOptions) {
+		CSLDestroy(papszOptions);
+	}
 
 	currentFileType = newFileType;
 
