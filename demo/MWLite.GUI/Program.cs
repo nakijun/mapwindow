@@ -16,9 +16,17 @@ namespace MWLite.GUI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            InitGlobalSettings();
-            // Application.Run(new LoaderForm());
-            Application.Run(new MainForm());
+
+            try
+            {
+                InitGlobalSettings();
+                // Application.Run(new LoaderForm());
+                Application.Run(new MainForm());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to start: " + ex.Message);
+            }
         }
 
         public static void InitGlobalSettings()
