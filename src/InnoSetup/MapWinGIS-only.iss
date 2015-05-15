@@ -2,33 +2,37 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "MapWinGIS"
-#define MyAppVersion "4.9.3.4"
+#define MyAppVersion "4.9.3.5"
 #define MyAppPublisher "MapWindow Open Source GIS Community"
 #define MyAppURL "http://www.mapwindow.org"
-#define SetupLocation "D:\dev\MapwinGIS\MapWinGIS\trunk\InnoSetup"
-#define Bin32Location "D:\dev\MapwinGIS\MapWinGIS\trunk\bin"
-#define DemoLocation "D:\dev\MapwinGIS\NET Assemblies\Demo\MWLite.GUI\bin\x86\Release"
-;#define x64BitVersion
+#define SetupLocation "C:\dev\mapwingis\src\InnoSetup"
+#define Bin32Location "C:\dev\mapwingis\src\bin"
+;; #define x64BitVersion
 
 #ifdef x64BitVersion
   #define CPU "x64"
   #define vcredist "vcredist_x64_2010_sp1.exe"
-  #define MySourceDir "C:\dev\MapWinGIS4Dev\MapWinGIS\trunk\bin\x64\"
+  #define MySourceDir "C:\dev\mapwingis\src\bin\x64\"
   #define SystemFlag "64bit"
+  #define DemoLocation "C:\dev\mapwingis\demo\MWLite.GUI\bin\x64\Release"
 #else
   #define CPU "Win32"
   #define vcredist "vcredist_x86_2010_sp1.exe"
-  #define MySourceDir "D:\dev\MapwinGIS\MapWinGIS\trunk\bin\Win32\"
+  #define MySourceDir "C:\dev\mapwingis\src\bin\Win32\"
   #define SystemFlag "32bit"
+  #define DemoLocation "C:\dev\mapwingis\demo\MWLite.GUI\bin\x86\Release"
 #endif
-
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{C31CF8C2-B385-460A-9533-5C92B457D4C2}
-AppName={#MyAppName}
+#ifdef x64BitVersion
+  AppId={{6BEBD4FD-49F2-4D2C-8AA3-5DBADFCC9F2E}
+#else
+  AppId={{C31CF8C2-B385-460A-9533-5C92B457D4C2}
+#endif
+AppName={#MyAppName}-{#CPU}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
@@ -115,13 +119,14 @@ Source: "{#Bin32Location}\PROJ_NAD\*"; DestDir: "{app}\PROJ_NAD"; Flags: ignorev
 Source: "{#DemoLocation}\*.dll"; DestDir: "{app}\MapWindowLite\"; Flags: ignoreversion {#SystemFlag}; Components: DemoApp
 Source: "{#DemoLocation}\*.exe"; DestDir: "{app}\MapWindowLite\"; Flags: ignoreversion {#SystemFlag}; Components: DemoApp
 Source: "{#DemoLocation}\*.exe.config"; DestDir: "{app}\MapWindowLite\"; Flags: ignoreversion {#SystemFlag}; Components: DemoApp
+Source: "{#DemoLocation}\*.xml"; DestDir: "{app}\MapWindowLite\"; Flags: ignoreversion {#SystemFlag}; Components: DemoApp
 
 ;; To register the ocx:
 Source: "{#SetupLocation}\regMapWinGIS.cmd"; DestDir: "{app}"; Flags: ignoreversion; Components: MapWinGIS_Core
 Source: "{#SetupLocation}\unregMapWinGIS.cmd"; DestDir: "{app}"; Flags: ignoreversion; Components: MapWinGIS_Core
-Source: "{#SetupLocation}\SetEnv.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: MapWinGIS_Core
+;; Source: "{#SetupLocation}\SetEnv.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: MapWinGIS_Core
 ;; VC++ files
-Source: "{#SetupLocation}\{#vcredist}"; DestDir: "{tmp}"; Flags: deleteafterinstall ignoreversion {#SystemFlag};
+Source: "{#SetupLocation}\{#vcredist}"; DestDir: "{tmp}"; Flags: deleteafterinstall ignoreversion {#SystemFlag}
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Messages]
@@ -152,8 +157,6 @@ Filename: "http://www.mapwindow.org/documentation/mapwingis4.9/version_history.h
 Filename: "{app}\unregMapWinGIS.cmd"; WorkingDir: "{app}"; Flags: runhidden
 
 [Registry]
-;; Add location of MapWinGIS to path, needed for netcdf.dll
-;; Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: "expandsz"; ValueName: "Path"; ValueData: "{olddata};{app}"; Check: NeedsAddPath(ExpandConstant('{app}'))
 
 [Code]
 #IFDEF UNICODE

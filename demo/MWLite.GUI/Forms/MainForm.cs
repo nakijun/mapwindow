@@ -24,7 +24,7 @@ namespace MWLite.GUI.Forms
         public MainForm()
         {
             InitializeComponent();
-
+            
             _callback = new MapCallback(statusStrip1, progressBar1, lblProgressMessage);
 
             _form = this;
@@ -36,6 +36,7 @@ namespace MWLite.GUI.Forms
 
         private void Init()
         {
+            // MessageBox.Show("Start init");
             InitDockLayout();
 
             PluginHelper.Init(this);
@@ -60,12 +61,12 @@ namespace MWLite.GUI.Forms
             App.Project.ProjectChanged += (s, e) => RefreshUI();
 
             App.Project.Load(AppSettings.Instance.LastProject);
+            // MessageBox.Show("End init");
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             string lastProject = App.Project.GetPath();
-
             if (!App.Map.ShapeEditor.SaveChanges())
             {
                 e.Cancel = true;
@@ -118,9 +119,7 @@ namespace MWLite.GUI.Forms
             form.Show(dockPanel1, DockState.Document);
             form.CloseButton = false;
 
-            _mapForm.Activate();
-
-           
+            _mapForm.Activate();           
         }
 
         #endregion

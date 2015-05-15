@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("MapWindow OSS Team - www.mapwindow.org")]
 [assembly: AssemblyProduct("MapWindow GIS - Symbology Plug-in")]
-[assembly: AssemblyCopyright("Copyright (C) 1998-2011 MapWindow OSS Team")]
-[assembly: AssemblyTrademark("MapWindow GIS is a trademark of Daniel P. Ames, 2005-2009")]
+[assembly: AssemblyCopyright("Copyright (C) 1998-2015 MapWindow OSS Team")]
+[assembly: AssemblyTrademark("MapWindow GIS is a trademark of Daniel P. Ames, 2005-2015")]
 [assembly: AssemblyCulture("")]			
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 // Build Number
 // Revision
 // 
-[assembly: AssemblyVersion("4.8.4.*")]
-[assembly: AssemblyFileVersion("4.8.4.0")]
+[assembly: AssemblyVersion("1.0.5.*")]
+[assembly: AssemblyFileVersion("1.0.5.0")]
