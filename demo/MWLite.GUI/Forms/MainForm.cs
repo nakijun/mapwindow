@@ -14,7 +14,7 @@ namespace MWLite.GUI.Forms
 {
     public partial class MainForm : DockContent, IMapApp
     {
-        private const string WINDOW_TITLE = "MapWinGIS Demo";
+        public const string WINDOW_TITLE = "MWLite"; //"MapWinGIS Demo";
         private readonly AppDispatcher _dispatcher = new AppDispatcher();
         private static MainForm _form = null;
         private MapForm _mapForm = null;

@@ -29,6 +29,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 #ifdef x64BitVersion
   AppId={{6BEBD4FD-49F2-4D2C-8AA3-5DBADFCC9F2E}
+  ArchitecturesAllowed=x64
 #else
   AppId={{C31CF8C2-B385-460A-9533-5C92B457D4C2}
 #endif
@@ -38,6 +39,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
+UsePreviousAppDir=yes
 DefaultDirName=C:\dev\{#MyAppName}
 DisableProgramGroupPage=yes
 DefaultGroupName={#MyAppName}

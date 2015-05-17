@@ -4,36 +4,45 @@
 #define MyAppName "MapWindow GIS Lite"
 #define MyAppPublisher "MapWindow Open Source GIS Community"
 #define MyAppURL "http://www.mapwindow.org"
-#define SetupLocation "D:\dev\MapwinGIS\MapWinGIS\trunk\InnoSetup"
-#define Bin32Location "D:\dev\MapwinGIS\MapWinGIS\trunk\bin"
-#define DemoLocation "D:\dev\MapwinGIS\NET Assemblies\Demo\MWLite.GUI\bin\x86\Release"
-#define MyAppVersion GetFileVersion(DemoLocation + '\MapWindowLite.exe')
-;#define x64BitVersion
+#define SetupLocation "C:\dev\mapwingis\src\InnoSetup"
+#define Bin32Location "C:\dev\mapwingis\src\bin"
+#define x64BitVersion
 
 #ifdef x64BitVersion
   #define CPU "x64"
   #define vcredist "vcredist_x64_2010_sp1.exe"
-  #define MySourceDir "C:\dev\MapWinGIS4Dev\MapWinGIS\trunk\bin\x64\"
+  #define MySourceDir "C:\dev\mapwingis\src\bin\x64\"
   #define SystemFlag "64bit"
+  #define DemoLocation "C:\dev\mapwingis\demo\MWLite.GUI\bin\x64\Release"
 #else
   #define CPU "Win32"
   #define vcredist "vcredist_x86_2010_sp1.exe"
-  #define MySourceDir "D:\dev\MapwinGIS\MapWinGIS\trunk\bin\Win32\"
+  #define MySourceDir "C:\dev\mapwingis\src\bin\Win32\"
   #define SystemFlag "32bit"
+  #define DemoLocation "C:\dev\mapwingis\demo\MWLite.GUI\bin\x86\Release"
 #endif
 
+#define MyAppVersion GetFileVersion(DemoLocation + '\MapWindowLite.exe')
+#define ReadAboutMW5Url "http://www.mapwindow.org/documentation/mapwingis4.9/MapWindow49.html?utm_source=MWv49&utm_medium=cpc&utm_campaign=MWLite" + MyAppVersion
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{2911C965-7FDC-4A99-8532-393BF49EA09A}
-AppName={#MyAppName}
+#ifdef x64BitVersion
+  AppId={{95096BF6-B8DD-4FF2-9A59-D726DF9F1BAE}
+  ArchitecturesAllowed=x64
+  ArchitecturesInstallIn64BitMode=x64
+#else
+  AppId={{2911C965-7FDC-4A99-8532-393BF49EA09A}
+#endif
+AppName={#MyAppName}-{#CPU}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
+UsePreviousAppDir=yes
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=no
 DefaultGroupName={#MyAppName}
@@ -123,10 +132,10 @@ Source: "{#Bin32Location}\PROJ_NAD\*"; DestDir: "{app}\MapWinGIS\PROJ_NAD"; Flag
 Source: "{#DemoLocation}\*.dll"; DestDir: "{app}"; Flags: ignoreversion {#SystemFlag}; Components: MapWindowLite
 Source: "{#DemoLocation}\*.exe"; DestDir: "{app}"; Flags: ignoreversion {#SystemFlag}; Components: MapWindowLite
 Source: "{#DemoLocation}\*.exe.config"; DestDir: "{app}"; Flags: ignoreversion {#SystemFlag}; Components: MapWindowLite
+Source: "{#DemoLocation}\*.xml"; DestDir: "{app}\MapWindowLite\"; Flags: ignoreversion {#SystemFlag}; Components: MapWindowLite
 ;; To register the ocx:
 Source: "{#SetupLocation}\regMapWinGIS.cmd"; DestDir: "{app}\MapWinGIS\"; Flags: ignoreversion; Components: MapWindowLite
 Source: "{#SetupLocation}\unregMapWinGIS.cmd"; DestDir: "{app}\MapWinGIS\"; Flags: ignoreversion; Components: MapWindowLite
-Source: "{#SetupLocation}\SetEnv.exe"; DestDir: "{app}\MapWinGIS\"; Flags: ignoreversion; Components: MapWindowLite
 ;; VC++ files
 Source: "{#SetupLocation}\{#vcredist}"; DestDir: "{tmp}"; Flags: deleteafterinstall ignoreversion {#SystemFlag};
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -150,7 +159,7 @@ Filename: "{tmp}\{#vcredist}"; Parameters: "/qb"; Flags: waituntilterminated; Ch
 ;Run some command files:
 Filename: "{app}\MapWinGIS\regMapWinGIS.cmd"; WorkingDir: "{app}"; Flags: runhidden
 Filename: "{app}\MapWindowLite.exe"; Flags: shellexec runasoriginaluser postinstall nowait skipifsilent; Description: "Start MapWindow GIS Lite"
-Filename: "http://www.mapwindow.org/documentation/mapwingis4.9/MapWindow49.html?utm_source=MWv49&utm_medium=cpc&utm_campaign=MWv5Promotions"; Flags: shellexec runasoriginaluser postinstall nowait skipifsilent; Description: "Read about the future of MapWinGIS/MapWindow v5"
+Filename: "{#ReadAboutMW5Url}"; Flags: shellexec runasoriginaluser postinstall nowait skipifsilent; Description: "Read about the future of MapWinGIS/MapWindow v5"
 
 [UninstallRun]
 Filename: "{app}\MapWinGIS\unregMapWinGIS.cmd"; WorkingDir: "{app}"; Flags: runhidden
@@ -162,7 +171,7 @@ Filename: "{app}\MapWinGIS\unregMapWinGIS.cmd"; WorkingDir: "{app}"; Flags: runh
 [Icons]
 ;; In start menu:
 Name: "{group}\{#MyAppName}"; Filename: "{app}\MapWindowLite.exe"; WorkingDir: "{app}"; Comment: "Start MapWindow GIS Lite"; Components: MapWindowLite
-Name: "{group}\MapWindow v5"; Filename: "http://www.mapwindow.org/documentation/mapwingis4.9/MapWindow49.html?utm_source=MWv49&utm_medium=cpc&utm_campaign=MWv5Promotions"; Comment: "Read about the future of MapWinGIS/MapWindow v5"; Components: MapWindowLite
+Name: "{group}\MapWindow v5"; Filename: "{#ReadAboutMW5Url}"; Comment: "Read about the future of MapWinGIS/MapWindow v5"; Components: MapWindowLite
 ;; On desktop:
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\MapWindowLite.exe"; WorkingDir: "{app}"; Comment: "Start MapWindow GIS Lite"; Components: MapWindowLite
 
